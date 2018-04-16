@@ -33,6 +33,10 @@ mongoose.connect(config.database);
 //   next();
 // });
 
+router.get('/', (req, res) => {
+  res.send('working...');
+})
+
 ///// Article Routes
 router.route('/articles')
 
@@ -106,7 +110,7 @@ router.post('auth/user', (req, res) => {
 });
 
 // FB user Register/Login
-router.post('fb/auth', (req, res) => {
+router.post('fb', (req, res) => {
   User.findOne({fbid: req.body.fbid}, (err, user) => {
     if(err) res.json({status: 'Error', msg: err});
 
