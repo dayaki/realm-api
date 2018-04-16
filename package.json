@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node ./server.js"
   },
+  "engines": {
+    "npm": "5.7.x"
+  },
   "author": "Dayo Akinkuowo",
   "license": "ISC",
   "dependencies": {

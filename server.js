@@ -19,10 +19,8 @@ let app = express();
 let router = express.Router();
 
 app.options('*', cors()) // include before other routes
-// app.use(cors({origin: 'http://localhost:8100'}));
-app.use(bodyParser({limit: '5mb'}));
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: '5mb'}));
 app.use('/api', router);
 
 // DB connection
@@ -37,6 +35,15 @@ mongoose.connect(config.database);
 router.get('/', (req, res) => {
   res.send("yeah it's working...")
 })
+///// Home Screen routes 
+router.get('/authors', (req, res) => {
+  User.find({author: "true"})
+    .sort({'date': -1}).limit(4).exec((err, authors) => {
+      if(err) res.json({status: 'Error'});
+      res.json({status: 'success', data: authors});
+  });
+});
+///// END Home Screen //////////////
 
 ///// Article Routes
 router.route('/articles')
@@ -175,7 +182,7 @@ router.route('/users')
     }}, {new: true}, (err, user) => {
       if(err) res.send('Error updating photo');
 
-      res.json({status: 'valid', data: user.photo});
+      res.json({status: 'valid', data: user});
     });
   })
 
