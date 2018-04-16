@@ -19,7 +19,7 @@ let app = express();
 let router = express.Router();
 
 app.options('*', cors()) // include before other routes
-app.use(cors({origin: 'http://localhost:8100'}));
+// app.use(cors({origin: 'http://localhost:8100'}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use('/api', router);
@@ -106,7 +106,7 @@ router.post('auth/user', (req, res) => {
 });
 
 // FB user Register/Login
-router.post('auth/fb', (req, res) => {
+router.post('fb/auth', (req, res) => {
   User.findOne({fbid: req.body.fbid}, (err, user) => {
     if(err) res.json({status: 'Error', msg: err});
 
