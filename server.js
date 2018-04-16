@@ -33,41 +33,6 @@ mongoose.connect(config.database);
 //   next();
 // });
 
-///// User Authentication
-router.route('/auth')
-  
-  .put((req, res) => {
-    let user = new User({
-      fbid: req.body.fbid,
-      name: req.body.name,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password)
-    });
-
-    user.save(function(err, user) {
-      if(err) return res.json({status: 'Error', data: err});
-      res.json({status: 'success', data: user});
-    });
-
-  })
-
-  .post((req, res) => {
-    let email = req.body.email;
-    let pass = req.body.password;
-
-    User.findOne({email: email}, function(err, user) {
-      if (err || user === null) {
-        res.json({status: 'Error', msg: 'Invalid Email'});
-      }
-
-      if(!bcrypt.compareSync(pass, user.password)) {
-        res.json({status: 'Error', msg: 'Invalid Password'});
-      } else {
-        res.json({status: 'valid', data: user});
-      }
-    });
-  });
-
 ///// Article Routes
 router.route('/articles')
 
@@ -124,50 +89,84 @@ router.route('/articles')
     });
 });
 
-///// Report Article
-router.post('/articles/report/', (req, res) => {
-  res.json({req: req.body.article_id, content: req.body.report});
+///// User Authentication
+
+// Register new Email User
+router.post('auth/user', (req, res) => {
+  let user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password)
+  });
+
+  user.save((err, user) => {
+    if(err) return res.json({status: 'Error', data: err});
+    res.json({status: 'success', data: user});
+  });
 });
 
-///// Rate Article
-router.post('/articles/rate', (req, res) => {
-  res.json({rate: req.body.rate});
-}) 
+// FB user Register/Login
+router.post('auth/fb', (req, res) => {
+  User.findOne({fbid: req.body.fbid}, (err, user) => {
+    if(err) res.json({status: 'Error', msg: err});
 
-// Comment Routes
-// router.route('/comment')
-//   .get((req, res) => {
-//     Comment.find({}).populate('user').populate('article')
-//       .exec((err, comments) => {
-//         if (err) res.send('Error finding comments');
+    res.json({status: 'success', data: user});
+  })
+});
 
-//         res.json(comments);
-//       });
+// Login User
+router.post('auth/login', (req, res) => {
+  let email = req.body.email;
+  let pass = req.body.password;
+
+  User.findOne({email: email}, (err, user) => {
+    if (err) res.json({status: 'Error', msg: err});
+    if(user === null) res.json({status: 'Error', msg: 'User not found'});
+
+    if(!bcrypt.compareSync(pass, user.password)) {
+      res.json({status: 'Error', msg: 'Invalid Password'});
+    } else {
+      res.json({status: 'valid', data: user});
+    }
+  });
+});
+
+//////// END User Authentication /////////////
+
+// router.route('/auth')
+  
+  
+//   .post((req, res) => {
+//     let user = new User({
+//       name: req.body.name,
+//       email: req.body.email,
+//       password: bcrypt.hashSync(req.body.password)
+//     });
+
+//     user.save(function(err, user) {
+//       if(err) return res.json({status: 'Error', data: err});
+//       res.json({status: 'success', data: user});
+//     });
+
 //   })
 
+//   // Login
 //   .post((req, res) => {
-//     let comment = new Comment({
-//       comment: req.body.comment,
-//       user: req.body.user_id,
-//       article: req.body.article_id
+//     let email = req.body.email;
+//     let pass = req.body.password;
+
+//     User.findOne({email: email}, function(err, user) {
+//       if (err || user === null) {
+//         res.json({status: 'Error', msg: 'Invalid Email'});
+//       }
+
+//       if(!bcrypt.compareSync(pass, user.password)) {
+//         res.json({status: 'Error', msg: 'Invalid Password'});
+//       } else {
+//         res.json({status: 'valid', data: user});
+//       }
 //     });
-
-//     comment.save((err) => {
-//       if(err) res.send('Error posting comment');
-
-//       Article.findById(req.body.article_id, (err, article) => {
-//         if(err) res.send('Error finding article');
-
-//         article.comments.push(comment);
-//         article.save((err, article) => {
-//           if(err) res.send('Error saving comments to article');
-
-//           res.json({status: 'valid', msg: 'comment added successfully'});
-//         });
-//       });
-//     });
-//   });
-///// END Comment ////////
+// });
 
 ///// User Routes
 router.get('/users/:id', (req, res) => {
@@ -176,8 +175,9 @@ router.get('/users/:id', (req, res) => {
     res.json({status: 'success', data: user});
   })
 });
-router.route('/users')
 
+router.route('/users')
+  
   .get((req, res) => {
     User.find(function(err, users) {
       if (err) return res.send(err.errmsg);
@@ -185,6 +185,7 @@ router.route('/users')
     })
   })
 
+  // FB register
   .post((req, res) => {
     let user = new User({
       fbid: req.body.fbid,
@@ -199,7 +200,8 @@ router.route('/users')
     });
   })
 
-  .patch((req, res) => { // Update User Photo
+  // Update User Photo
+  .patch((req, res) => {
     User.findByIdAndUpdate(req.body.user_id, {$set: {
       photo: req.body.photo
     }}, {new: true}, (err, user) => {
@@ -209,7 +211,8 @@ router.route('/users')
     });
   })
 
-  .put((req, res) => { // Update User info
+  // Update User info
+  .put((req, res) => {
     if (req.body.password === undefined) {
       User.findByIdAndUpdate(req.body.user_id, {$set: {
         name: req.body.name,
@@ -263,6 +266,51 @@ router.route('/categories')
       res.json({status: 'success'});
     });
 });
+
+///// Report Article
+router.post('/articles/report/', (req, res) => {
+  res.json({req: req.body.article_id, content: req.body.report});
+});
+
+///// Rate Article
+router.post('/articles/rate', (req, res) => {
+  res.json({rate: req.body.rate});
+}) 
+
+// Comment Routes
+// router.route('/comment')
+//   .get((req, res) => {
+//     Comment.find({}).populate('user').populate('article')
+//       .exec((err, comments) => {
+//         if (err) res.send('Error finding comments');
+
+//         res.json(comments);
+//       });
+//   })
+
+//   .post((req, res) => {
+//     let comment = new Comment({
+//       comment: req.body.comment,
+//       user: req.body.user_id,
+//       article: req.body.article_id
+//     });
+
+//     comment.save((err) => {
+//       if(err) res.send('Error posting comment');
+
+//       Article.findById(req.body.article_id, (err, article) => {
+//         if(err) res.send('Error finding article');
+
+//         article.comments.push(comment);
+//         article.save((err, article) => {
+//           if(err) res.send('Error saving comments to article');
+
+//           res.json({status: 'valid', msg: 'comment added successfully'});
+//         });
+//       });
+//     });
+//   });
+///// END Comment ////////
 
 // listen (start app with node server.js) =====================
 // app.listen(config.port);
