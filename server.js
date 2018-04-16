@@ -34,7 +34,7 @@ mongoose.connect(config.database);
 // });
 
 router.get('/', (req, res) => {
-  res.send('working...');
+  res.send('working...')
 })
 
 ///// Article Routes
@@ -96,7 +96,7 @@ router.route('/articles')
 ///// User Authentication
 
 // Register new Email User
-router.post('auth/user', (req, res) => {
+router.post('/auth/user', (req, res) => {
   let user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -110,7 +110,7 @@ router.post('auth/user', (req, res) => {
 });
 
 // FB user Register/Login
-router.post('fb', (req, res) => {
+router.post('/auth/fb', (req, res) => {
   User.findOne({fbid: req.body.fbid}, (err, user) => {
     if(err) res.json({status: 'Error', msg: err});
 
@@ -119,7 +119,7 @@ router.post('fb', (req, res) => {
 });
 
 // Login User
-router.post('auth/login', (req, res) => {
+router.post('/auth/login', (req, res) => {
   let email = req.body.email;
   let pass = req.body.password;
 
