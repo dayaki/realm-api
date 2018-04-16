@@ -34,7 +34,7 @@ mongoose.connect(config.database);
 // });
 
 router.get('/', (req, res) => {
-  res.send('working...')
+  res.send("yeah it's working...")
 })
 
 ///// Article Routes
@@ -97,15 +97,20 @@ router.route('/articles')
 
 // Register new Email User
 router.post('/auth/user', (req, res) => {
-  let user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password)
-  });
+  User.findOne({email: req.body.email}, (err, data) => {
+    if (err) res.json({status: 'Error', msg: err});
+    if (data !== null) res.json({status: 'Error', msg: 'Email is already used.'});
 
-  user.save((err, user) => {
-    if(err) return res.json({status: 'Error', data: err});
-    res.json({status: 'success', data: user});
+    let newUser = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password)
+    });
+  
+    newUser.save((err, user) => {
+      if(err) return res.json({status: 'Error', data: err});
+      res.json({status: 'success', data: user});
+    });
   });
 });
 
@@ -114,8 +119,23 @@ router.post('/auth/fb', (req, res) => {
   User.findOne({fbid: req.body.fbid}, (err, user) => {
     if(err) res.json({status: 'Error', msg: err});
 
-    res.json({status: 'success', data: user});
-  })
+    if (user === null) {
+      let user = new User({
+        fbid: req.body.fbid,
+        name: req.body.name,
+        email: req.body.email,
+        photo: req.body.photo
+      });
+  
+      user.save((err, user) => {
+        if(err) res.send(err.message);
+        res.json({status: 'success', data: user});
+      });
+
+    } else {
+      res.json({status: 'success', data: user});
+    };
+  });
 });
 
 // Login User
