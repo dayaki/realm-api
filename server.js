@@ -265,5 +265,6 @@ router.route('/categories')
 });
 
 // listen (start app with node server.js) =====================
-app.listen(config.port);
+// app.listen(config.port);
+app.listen(process.env.PORT || 3000)
 console.log('Dragons are alive at port ' + config.port);
