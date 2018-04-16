@@ -7,6 +7,7 @@ var UserSchema = new Schema({
   photo: String,
   phone: String,
   website: String,
+  pref: String,
   author: {
     type: Boolean,
     default: false

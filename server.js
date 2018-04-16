@@ -20,6 +20,7 @@ let router = express.Router();
 
 app.options('*', cors()) // include before other routes
 // app.use(cors({origin: 'http://localhost:8100'}));
+app.use(bodyParser({limit: '5mb'}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use('/api', router);
@@ -157,71 +158,14 @@ router.post('/auth/login', (req, res) => {
 
 //////// END User Authentication /////////////
 
-// router.route('/auth')
-  
-  
-//   .post((req, res) => {
-//     let user = new User({
-//       name: req.body.name,
-//       email: req.body.email,
-//       password: bcrypt.hashSync(req.body.password)
-//     });
-
-//     user.save(function(err, user) {
-//       if(err) return res.json({status: 'Error', data: err});
-//       res.json({status: 'success', data: user});
-//     });
-
-//   })
-
-//   // Login
-//   .post((req, res) => {
-//     let email = req.body.email;
-//     let pass = req.body.password;
-
-//     User.findOne({email: email}, function(err, user) {
-//       if (err || user === null) {
-//         res.json({status: 'Error', msg: 'Invalid Email'});
-//       }
-
-//       if(!bcrypt.compareSync(pass, user.password)) {
-//         res.json({status: 'Error', msg: 'Invalid Password'});
-//       } else {
-//         res.json({status: 'valid', data: user});
-//       }
-//     });
-// });
-
 ///// User Routes
-router.get('/users/:id', (req, res) => {
-  User.find({fbid: req.params.id}, (err, user) => {
-    if(err) res.send('No user found');
-    res.json({status: 'success', data: user});
-  })
-});
-
 router.route('/users')
   
   .get((req, res) => {
     User.find(function(err, users) {
       if (err) return res.send(err.errmsg);
-      res.json(users);
+      res.json({data: users});
     })
-  })
-
-  // FB register
-  .post((req, res) => {
-    let user = new User({
-      fbid: req.body.fbid,
-      name: req.body.name,
-      email: req.body.email,
-      photo: req.body.photo
-    });
-
-    user.save((err, user) => {
-      if(err) res.send(err.message);
-      res.json({status: 'success', data: user});
-    });
   })
 
   // Update User Photo
@@ -246,7 +190,9 @@ router.route('/users')
         if(err) res.send('Error updating user');
         res.json({status: 'valid', data: user});
       });
+
     } else {
+
       User.findByIdAndUpdate(req.body.user_id, {$set: {
         name: req.body.name,
         phone: req.body.phone,
@@ -259,6 +205,16 @@ router.route('/users')
     }
 });
 
+// Update User Preferred category
+router.post('/user/pref/:id', (req, res) => {
+  User.findByIdAndUpdate(req.params.id, 
+    { $set: { pref: req.body.pref }}, { new: false }, (err, user) => {
+      if(err) res.json({status: 'Error'});
+      res.json({status: 'success', data: user});
+    })
+});
+//////// END User Routes /////////////
+
 ///// Quotes route
 router.route('/quotes')
   .get((req, res) => {
@@ -268,6 +224,7 @@ router.route('/quotes')
       res.json({status: 'success', data: quotes});
     })
 });
+//////// END Quotes route /////////////
 
 ///// Category route
 router.route('/categories')
@@ -290,6 +247,7 @@ router.route('/categories')
       res.json({status: 'success'});
     });
 });
+//////// END User Authentication /////////////
 
 ///// Report Article
 router.post('/articles/report/', (req, res) => {
