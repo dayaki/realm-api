@@ -181,7 +181,7 @@ router.route('/users')
       photo: req.body.photo
     }}, {new: true}, (err, user) => {
       if(err) res.send('Error updating photo');
-
+      console.log('new user', user);
       res.json({status: 'valid', data: user});
     });
   })
