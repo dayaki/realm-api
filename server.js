@@ -119,14 +119,14 @@ router.post('/articles/like/:id', (req, res) => {
     Article.update({_id: req.params.id}, 
       { $push: { likes: req.body.user } }, function(err) {
         if(err) res.json({status: 'error'});
-        res.json({status: 'success', data: article});
+        res.json({status: 'success'});
     });
 
   } else {
     Article.update({_id: req.params.id}, 
       { $pop: { likes: req.body.user } }, function(err) {
         if(err) res.json({status: 'error'});
-        res.json({status: 'success', data: article});
+        res.json({status: 'success'});
     });
   }
 });
@@ -135,7 +135,7 @@ router.post('/articles/like/:id', (req, res) => {
 router.get('/articles/view/:id', (req, res) => {
   Article.findOneAndUpdate({_id: req.params.id}, {
     $inc : {
-      'article.likes' : 1
+      'article.views' : 1
     }
   }, (err) => {
     if(err) res.json({status: 'error'});
