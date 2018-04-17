@@ -18,6 +18,10 @@ var ArticleSchema = new Schema({
     type: Number,
     default: 0
   },
+  likes: {
+    type: Number,
+    default: 0
+  },
   views: {
     type: Number,
     default: 0
