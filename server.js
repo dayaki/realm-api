@@ -119,18 +119,14 @@ router.post('/articles/like/:id', (req, res) => {
 })
 
 // Update Article View
-router.put('/articles/view/:id', (req, res) => {
-  // Article.findOneAndUpdate({_id: req.params.id}, {
-  //   $inc : {
-  //     'article.likes' : 1
-  //   }
-  // })
-  Article.update({_id: req.params.id}, {
+router.get('/articles/view/:id', (req, res) => {
+  Article.findOneAndUpdate({_id: req.params.id}, {
     $inc : {
-      'article.views' : 1
+      'article.likes' : 1
     }
   }, (err) => {
     if(err) res.json({status: 'error'});
+    res.json({status: 'success'});
   });
 });
 
