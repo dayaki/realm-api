@@ -135,7 +135,7 @@ router.post('/articles/like/:id', (req, res) => {
 router.get('/articles/view/:id', (req, res) => {
   Article.findOneAndUpdate({_id: req.params.id}, {
     $inc : {
-      'article.views' : 1
+      views : 1
     }
   }, (err) => {
     if(err) res.json({status: 'error'});
