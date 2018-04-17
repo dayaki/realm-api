@@ -101,6 +101,18 @@ router.route('/articles')
     });
 });
 
+// Retrieve Articles based on user preferred category
+router.get('/articles/pref/:id', (req, res) => {
+  User.findById(req.params.id, (err, user) => {
+    if(err) res.json({status: 'error'});
+
+    Article.find({category: user.pref}, (err, articles) => {
+      if(err) res.json({status: 'error'});
+      res.json({status: 'success', data: articles});
+    })
+  })
+});
+
 ///// User Authentication
 
 // Register new Email User
@@ -181,7 +193,6 @@ router.route('/users')
       photo: req.body.photo
     }}, {new: true}, (err, user) => {
       if(err) res.send('Error updating photo');
-      console.log('new user', user);
       res.json({status: 'valid', data: user});
     });
   })
@@ -193,7 +204,7 @@ router.route('/users')
         name: req.body.name,
         phone: req.body.phone,
         website: req.body.website
-      }}, {new: true}, (err, article) => {
+      }}, {new: true}, (err, user) => {
         if(err) res.send('Error updating user');
         res.json({status: 'valid', data: user});
       });
@@ -220,6 +231,7 @@ router.post('/user/pref/:id', (req, res) => {
       res.json({status: 'success', data: user});
     })
 });
+
 //////// END User Routes /////////////
 
 ///// Quotes route
