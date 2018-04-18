@@ -116,17 +116,17 @@ router.get('/articles/pref/:id', (req, res) => {
 // Favorite an article
 router.post('/articles/like/:id', (req, res) => {
   if (req.body.state === true) {
-    Article.update({_id: req.params.id}, 
-      { $push: { likes: req.body.user } }, function(err) {
+    Article.findByIdAndUpdate(req.params.id, 
+      { $push: { likes: req.body.user }}, { new: true }, function(err, articles) {
         if(err) res.json({status: 'error'});
-        res.json({status: 'success'});
+        res.json({status: 'success', data: articles});
     });
 
   } else {
-    Article.update({_id: req.params.id}, 
-      { $pop: { likes: req.body.user } }, function(err) {
+    Article.findByIdAndUpdate(req.params.id, 
+      { $pop: { likes: req.body.user } }, { new: true }, function(err, articles) {
         if(err) res.json({status: 'error'});
-        res.json({status: 'success'});
+        res.json({status: 'success', data: articles});
     });
   }
 });
