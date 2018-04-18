@@ -134,35 +134,27 @@ router.post('/articles/like/:id', (req, res) => {
 
     fav.save((err, favorite) => {
       if(err) res.json({status: 'error'});
-      res.json({status: 'success'});
+      Article.update({_id: req.params.id}, 
+        { $push: { likes: req.body.user } }, function(err) {
+          if(err) res.json({status: 'error'});
+          Article.find((err, articles) => {
+            res.json({status: 'success', data: articles});
+          });
+      });
     });
   } else {
-    
+
     Favorite.findOneAndRemove({user: req.body.user}, (err, article) => {
       if(err) res.json({status: 'error'});
-      res.json({status: 'success', data: article});
+      Article.update({_id: req.params.id}, 
+        { $pop: { likes: req.body.user } }, function(err) {
+          if(err) res.json({status: 'error'});
+          Article.find((err, articles) => {
+            res.json({status: 'success', data: articles});
+          });
+      });
     });
   }
-  // if (req.body.state === true) {
-  //   Article.update({_id: req.params.id}, 
-  //     { $push: { likes: req.body.user } }, function(err) {
-  //       if(err) res.json({status: 'error'});
-
-  //       Article.find((err, articles) => {
-  //         res.json({status: 'success', data: articles});
-  //       });
-  //   });
-
-  // } else {
-  //   Article.update({_id: req.params.id}, 
-  //     { $pop: { likes: req.body.user } }, function(err) {
-  //       if(err) res.json({status: 'error'});
-
-  //       Article.find((err, articles) => {
-  //         res.json({status: 'success', data: articles});
-  //       });
-  //   });
-  // }
 });
 
 // Fetch User's favorite articles
