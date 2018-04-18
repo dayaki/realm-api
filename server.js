@@ -186,6 +186,17 @@ router.post('/articles/done/:id', (req, res) => {
   });
 });
 
+// Fetch User's finished articles
+// router.get('/articles/done/:id', (req, res) => {
+//   Article.find({}, (err, articles) => {
+
+//   });
+//   Favorite.find({user: req.params.id}).populate('article').exec((err, favorites) => {
+//     if (err) res.json({status: 'error'});
+//     res.json({status: 'success', data: favorites});
+//   });
+// });
+
 ///// User Authentication
 
 // Register new Email User
