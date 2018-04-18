@@ -13,6 +13,7 @@ let Article   = require('./app/models/article');
 let Comment   = require('./app/models/comment');
 let Quote     = require('./app/models/quote');
 let Category  = require('./app/models/category');
+let Favorite  = require('./app/models/favorite');
 
 // Variables
 let app = express();
@@ -101,6 +102,16 @@ router.route('/articles')
     });
 });
 
+// Report Article
+router.post('/articles/report/', (req, res) => {
+  res.json({req: req.body.article_id, content: req.body.report});
+});
+
+// Rate Article
+router.post('/articles/rate', (req, res) => {
+  res.json({rate: req.body.rate});
+}) 
+
 // Retrieve Articles based on user preferred category
 router.get('/articles/pref/:id', (req, res) => {
   User.findById(req.params.id, (err, user) => {
@@ -116,34 +127,56 @@ router.get('/articles/pref/:id', (req, res) => {
 // Favorite an article
 router.post('/articles/like/:id', (req, res) => {
   if (req.body.state === true) {
-    Article.update({_id: req.params.id}, 
-      { $push: { likes: req.body.user } }, function(err) {
-        if(err) res.json({status: 'error'});
-
-        Article.find((err, articles) => {
-          res.json({status: 'success', data: articles});
-        });
+    let fav = new Favorite({
+      article: req.params.id,
+      user: req.body.user   
     });
 
+    fav.save((err, favorite) => {
+      if(err) res.json({status: 'error'});
+      res.json({status: 'success'});
+    });
   } else {
-    Article.update({_id: req.params.id}, 
-      { $pop: { likes: req.body.user } }, function(err) {
-        if(err) res.json({status: 'error'});
-
-        Article.find((err, articles) => {
-          res.json({status: 'success', data: articles});
-        });
+    
+    Favorite.findOneAndRemove({user: req.body.user}, (err, article) => {
+      if(err) res.json({status: 'error'});
+      res.json({status: 'success', data: article});
     });
   }
+  // if (req.body.state === true) {
+  //   Article.update({_id: req.params.id}, 
+  //     { $push: { likes: req.body.user } }, function(err) {
+  //       if(err) res.json({status: 'error'});
+
+  //       Article.find((err, articles) => {
+  //         res.json({status: 'success', data: articles});
+  //       });
+  //   });
+
+  // } else {
+  //   Article.update({_id: req.params.id}, 
+  //     { $pop: { likes: req.body.user } }, function(err) {
+  //       if(err) res.json({status: 'error'});
+
+  //       Article.find((err, articles) => {
+  //         res.json({status: 'success', data: articles});
+  //       });
+  //   });
+  // }
+});
+
+// Fetch User's favorite articles
+router.get('/articles/fav/:id', (req, res) => {
+  Favorite.find({user: req.params.id}).populate('article').exec((err, favorites) => {
+    if (err) res.json({status: 'error'});
+    res.json({status: 'success', data: favorites});
+  });
 });
 
 // Update Article View
 router.get('/articles/view/:id', (req, res) => {
-  Article.findOneAndUpdate({_id: req.params.id}, {
-    $inc : {
-      views : 1
-    }
-  }, (err) => {
+  Article.findOneAndUpdate({_id: req.params.id}, 
+    { $inc : { views : 1 }}, (err) => {
     if(err) res.json({status: 'error'});
     res.json({status: 'success'});
   });
@@ -267,7 +300,6 @@ router.post('/user/pref/:id', (req, res) => {
       res.json({status: 'success', data: user});
     })
 });
-
 //////// END User Routes /////////////
 
 ///// Quotes route
@@ -279,7 +311,6 @@ router.route('/quotes')
       res.json({status: 'success', data: quotes});
     })
 });
-//////// END Quotes route /////////////
 
 ///// Category route
 router.route('/categories')
@@ -302,17 +333,6 @@ router.route('/categories')
       res.json({status: 'success'});
     });
 });
-//////// END User Authentication /////////////
-
-///// Report Article
-router.post('/articles/report/', (req, res) => {
-  res.json({req: req.body.article_id, content: req.body.report});
-});
-
-///// Rate Article
-router.post('/articles/rate', (req, res) => {
-  res.json({rate: req.body.rate});
-}) 
 
 // Comment Routes
 // router.route('/comment')
