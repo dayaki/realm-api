@@ -174,6 +174,18 @@ router.get('/articles/view/:id', (req, res) => {
   });
 });
 
+// Mark article as finished
+router.post('/articles/done/:id', (req, res) => {
+  Article.update({_id: req.params.id}, 
+    { $push: { finished: req.body.user } }, function(err) {
+      if(err) res.json({status: 'error'});
+      res.json({status: 'success'});
+      // Article.find((err, articles) => {
+      //   res.json({status: 'success', data: articles});
+      // });
+  });
+});
+
 ///// User Authentication
 
 // Register new Email User

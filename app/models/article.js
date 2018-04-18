@@ -22,6 +22,10 @@ var ArticleSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   }],
+  finished: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   views: {
     type: Number,
     default: 0
