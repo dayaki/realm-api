@@ -1,18 +1,8 @@
 let mongoose = require('mongoose');
-let Article = require('./article');
-let Schema = mongoose.Schema;
+let Schema   = mongoose.Schema;
  
 var UserSchema = new Schema({
   fbid: String,
-  photo: String,
-  phone: String,
-  website: String,
-  pref: String,
-  bio: String,
-  author: {
-    type: Boolean,
-    default: false
-  },
   name: {
     type: String,
     required: true
@@ -22,16 +12,9 @@ var UserSchema = new Schema({
     unique: true,
     required: true
   },
-  password: {
-    type: String
-  },
-  articles: [{
-    article: {
-      type: Schema.Types.ObjectId, 
-      ref: 'Article',
-      require: true
-    }
-  }]
+  password: String,
+  photo: String,
+  onesignal: String
 });
 
 module.exports = mongoose.model('User', UserSchema);

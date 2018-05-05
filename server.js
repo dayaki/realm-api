@@ -9,16 +9,15 @@ var randomColor = require('randomcolor');
 
 // Models
 let User      = require('./app/models/user');
-let Article   = require('./app/models/article');
-let Comment   = require('./app/models/comment');
-let Quote     = require('./app/models/quote');
-let Category  = require('./app/models/category');
-let Favorite  = require('./app/models/favorite');
+let Sermon    = require('./app/models/sermon');
+let Note      = require('./app/models/note');
+let Give      = require('./app/models/give');
 
 // Variables
 let app = express();
 let router = express.Router();
 
+app.use(cors());
 app.options('*', cors()) // include before other routes
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({limit: '5mb'}));
@@ -35,187 +34,52 @@ mongoose.connect(config.database);
 
 router.get('/', (req, res) => {
   res.send("yeah it's working...")
-})
-///// Home Screen routes 
-router.get('/authors', (req, res) => {
-  User.find({author: "true"})
-    .sort({'date': -1}).limit(4).exec((err, authors) => {
-      if(err) res.json({status: 'Error'});
-      res.json({status: 'success', data: authors});
-  });
 });
-///// END Home Screen //////////////
-
-///// Article Routes
-router.route('/articles')
-
-  .get((req, res) => {
-    Article.find({}).populate('author').populate('comments')
-      .exec(function(err, articles) {
-        if(err) res.send('Error fetching articles');
-
-        res.json({data: articles});
-    });
-  })
-
-  .post((req, res) => {
-      let article = new Article({
-        title: req.body.title,
-        slug: slug(req.body.title, {lower: true}),
-        author: req.body.author,
-        category: req.body.category,
-        rating: 0,
-        content: req.body.content,
-        published: req.body.published,
-        color: randomColor({format: 'rgba'})
-      });
-
-      article.save(function(err, article) {
-        if (err) return res.json({status: err});
-        User.update(
-          {_id: req.body.author}, 
-          {$push: {articles: article._id}}, function(err) {
-            if(err) res.send(err);
-            res.json({status: 'valid', data: article});
-        });
-      });
-  })
-
-  .put((req, res) => {
-    Article.findByIdAndUpdate(req.body.article_id, {$set: {
-      title: req.body.title,
-      content: req.body.content,
-      category: req.body.category,
-      published: req.body.published
-    }}, {new: true}, (err, article) => {
-      if (err) res.send('Error updating article');
-
-      res.json({status: 'valid', data: article});
-    });
-  })
-
-  .delete((req, res) => {
-    Article.remove({_id : req.body.id}, function(err, article) {
-      if(err) res.send('Error deleting the article');
-
-      res.json({status: 'valid', msg: 'Article deleted successfully'});
-    });
-});
-
-// Report Article
-router.post('/articles/report/', (req, res) => {
-  res.json({req: req.body.article_id, content: req.body.report});
-});
-
-// Rate Article
-router.post('/articles/rate', (req, res) => {
-  res.json({rate: req.body.rate});
-}) 
-
-// Retrieve Articles based on user preferred category
-router.get('/articles/pref/:id', (req, res) => {
-  User.findById(req.params.id, (err, user) => {
-    if(err) res.json({status: 'error'});
-
-    Article.find({category: user.pref}, (err, articles) => {
-      if(err) res.json({status: 'error'});
-      res.json({status: 'success', data: articles});
-    })
-  })
-});
-
-// Favorite an article
-router.post('/articles/like/:id', (req, res) => {
-  if (req.body.state === true) {
-    let fav = new Favorite({
-      article: req.params.id,
-      user: req.body.user   
-    });
-
-    fav.save((err, favorite) => {
-      if(err) res.json({status: 'error'});
-      Article.update({_id: req.params.id}, 
-        { $push: { likes: req.body.user } }, function(err) {
-          if(err) res.json({status: 'error'});
-          Article.find((err, articles) => {
-            res.json({status: 'success', data: articles});
-          });
-      });
-    });
-  } else {
-
-    Favorite.findOneAndRemove({user: req.body.user}, (err, article) => {
-      if(err) res.json({status: 'error'});
-      Article.update({_id: req.params.id}, 
-        { $pop: { likes: req.body.user } }, function(err) {
-          if(err) res.json({status: 'error'});
-          Article.find((err, articles) => {
-            res.json({status: 'success', data: articles});
-          });
-      });
-    });
-  }
-});
-
-// Fetch User's favorite articles
-router.get('/articles/fav/:id', (req, res) => {
-  Favorite.find({user: req.params.id}).populate('article').exec((err, favorites) => {
-    if (err) res.json({status: 'error'});
-    res.json({status: 'success', data: favorites});
-  });
-});
-
-// Update Article View
-router.get('/articles/view/:id', (req, res) => {
-  Article.findOneAndUpdate({_id: req.params.id}, 
-    { $inc : { views : 1 }}, (err) => {
-    if(err) res.json({status: 'error'});
-    res.json({status: 'success'});
-  });
-});
-
-// Mark article as finished
-router.post('/articles/done/:id', (req, res) => {
-  Article.update({_id: req.params.id}, 
-    { $push: { finished: req.body.user } }, function(err) {
-      if(err) res.json({status: 'error'});
-      res.json({status: 'success'});
-      // Article.find((err, articles) => {
-      //   res.json({status: 'success', data: articles});
-      // });
-  });
-});
-
-// Fetch User's finished articles
-// router.get('/articles/done/:id', (req, res) => {
-//   Article.find({}, (err, articles) => {
-
-//   });
-//   Favorite.find({user: req.params.id}).populate('article').exec((err, favorites) => {
-//     if (err) res.json({status: 'error'});
-//     res.json({status: 'success', data: favorites});
-//   });
-// });
-
-///// User Authentication
 
 // Register new Email User
 router.post('/auth/user', (req, res) => {
   User.findOne({email: req.body.email}, (err, data) => {
-    if (err) res.json({status: 'Error', msg: err});
-    if (data !== null) res.json({status: 'Error', msg: 'Email is already used.'});
+    if (err) res.json({ status: 'error', data: err });
 
-    let newUser = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password)
-    });
-  
-    newUser.save((err, user) => {
-      if(err) return res.json({status: 'Error', data: err});
-      res.json({status: 'success', data: user});
-    });
+    if (data !== null)  {
+      res.json({status: 'error', msg: 'Email is already used.'});
+    } else {
+      let newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password),
+        onesignal: req.body.onesignal
+      });
+
+      newUser.save((err, user) => {
+        if(err) return res.json({status: 'Error', data: err});
+        res.json({status: 'success', data: user});
+      });
+
+    }    
   });
+});
+
+// Login User
+router.post('/auth/login', (req, res) => {
+  let email = req.body.email;
+  let pass = req.body.password;
+
+  User.findOne({email: email}, (err, user) => {
+    if (err) res.json({ status: 'error', msg: err });
+
+    if (user === null) {
+      res.json({ status: 'error', msg: 'User not found.' });
+    } else {
+      if (!bcrypt.compareSync(pass, user.password)) {
+        res.json({ status: 'error', msg: 'Invalid Username or Password.' });
+      } else {
+        res.json({ status: 'success', data: user });
+      }
+    }
+
+  });
+
 });
 
 // FB user Register/Login
@@ -228,38 +92,23 @@ router.post('/auth/fb', (req, res) => {
         fbid: req.body.fbid,
         name: req.body.name,
         email: req.body.email,
-        photo: req.body.photo
+        photo: req.body.photo,
+        onesignal: req.body.onesignal
       });
   
       user.save((err, user) => {
         if(err) res.send(err.message);
-        res.json({status: 'success', data: user});
-      });
 
+        res.json({ status: 'success', data: user });
+      });
     } else {
-      res.json({status: 'success', data: user});
+      res.json({ status: 'success', data: user });
     };
   });
+
 });
 
-// Login User
-router.post('/auth/login', (req, res) => {
-  let email = req.body.email;
-  let pass = req.body.password;
 
-  User.findOne({email: email}, (err, user) => {
-    if (err) res.json({status: 'Error', msg: err});
-    if(user === null) res.json({status: 'Error', msg: 'User not found'});
-
-    if(!bcrypt.compareSync(pass, user.password)) {
-      res.json({status: 'Error', msg: 'Invalid Password'});
-    } else {
-      res.json({status: 'valid', data: user});
-    }
-  });
-});
-
-//////// END User Authentication /////////////
 
 ///// User Routes
 router.route('/users')
@@ -307,84 +156,59 @@ router.route('/users')
     }
 });
 
-// Update User Preferred category
-router.post('/user/pref/:id', (req, res) => {
-  User.findByIdAndUpdate(req.params.id, 
-    { $set: { pref: req.body.pref }}, { new: false }, (err, user) => {
-      if(err) res.json({status: 'Error'});
-      res.json({status: 'success', data: user});
-    })
-});
-//////// END User Routes /////////////
+// Notes
+router.get('/notes/:id', (req, res) => {
+  Note.find({author: req.params.id}, (err, notes) => {
+    if(err) res.json({ status: 'error' });
 
-///// Quotes route
-router.route('/quotes')
-  .get((req, res) => {
-    Quote.find({}, (err, quotes) => {
-      if(err) res.send('Error fetching quotes');
-
-      res.json({status: 'success', data: quotes});
-    })
+    res.json({ status: 'success', data: notes });
+  });
 });
 
-///// Category route
-router.route('/categories')
-  .get((req, res) => {
-    Category.find({}, (err, categories) => {
-      if(err) res.json({status: 'error'});
+router.post('/notes', (req, res) => {
+  let note = new Note({
+    title: req.body.title,
+    preacher: req.body.preacher,
+    content: req.body.content,
+    author: req.body.user
+  });
 
-      res.json(categories);
-    })
-  })
+  note.save((err, user) => {
+    if(err) res.json({ status: 'error', msg: err.message });
 
-  .post((req, res) => {
-    let category = new Category({
-      name: req.body.name
-    });
+    res.json({ status: 'success', data: note });
+  });
 
-    category.save((err, category) => {
-      if(err) res.json({status: 'error'});
-
-      res.json({status: 'success'});
-    });
 });
 
-// Comment Routes
-// router.route('/comment')
-//   .get((req, res) => {
-//     Comment.find({}).populate('user').populate('article')
-//       .exec((err, comments) => {
-//         if (err) res.send('Error finding comments');
+// Online Giving
+router.get('/giving', (req, res) => {
+  Give.find({}, (err, give) => {
+    if(err) res.json({ status: 'error', msg: err });
 
-//         res.json(comments);
-//       });
-//   })
+    res.json({ status: 'success', data: give });
+  });
+});
 
-//   .post((req, res) => {
-//     let comment = new Comment({
-//       comment: req.body.comment,
-//       user: req.body.user_id,
-//       article: req.body.article_id
-//     });
+router.post('/giving', (req, res) => {
+  let give = new Give({
+    name: req.body.name,
+    email: req.body.email,
+    phone: req.body.phone,
+    amount: req.body.amount,
+    type: req.body.type,
+    txn_ref: req.body.ref
+  });
 
-//     comment.save((err) => {
-//       if(err) res.send('Error posting comment');
+  give.save((err, give) => {
+    if(err) res.json({ status: 'error', msg: err });
 
-//       Article.findById(req.body.article_id, (err, article) => {
-//         if(err) res.send('Error finding article');
+    res.json({ status: 'success', data: give });
+  });
 
-//         article.comments.push(comment);
-//         article.save((err, article) => {
-//           if(err) res.send('Error saving comments to article');
-
-//           res.json({status: 'valid', msg: 'comment added successfully'});
-//         });
-//       });
-//     });
-//   });
-///// END Comment ////////
+});
 
 // listen (start app with node server.js) =====================
 // app.listen(config.port);
-app.listen(process.env.PORT || 3000)
+app.listen(config.port);
 console.log('Dragons are alive at port ' + config.port);
