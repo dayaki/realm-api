@@ -101,6 +101,44 @@ router.post('/auth/fb', (req, res) => {
 
 });
 
+// Admin Auth
+router.post('/auth/admin', (req, res) => {
+  User.findOne({
+    email: req.body.username,
+    isAdmin: true
+  }, (err, user) => {
+    if (err) res.json({ status: 'error', msg: err });
+
+    if (user === null) {
+      res.json({ status: 'error', msg: 'User not found.' });
+    } else {
+      if (!bcrypt.compareSync(req.body.password, user.password)) {
+        res.json({ status: 'error', msg: 'Invalid Username or Password.' });
+      } else {
+        res.json({ status: 'success', data: user });
+      }
+    }
+
+  });
+});
+
+router.post('/admin/new', (req, res) => {
+  let user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password),
+    isAdmin: true,
+    adminRole: req.body.role
+  });
+
+  user.save((err, user) => {
+    if(err) res.json({ status: 'error', data: err });
+
+    res.json({ status: 'success', data: user });
+  });
+
+});
+
 
 
 ///// User Routes
@@ -159,7 +197,7 @@ router.route('/sermons')
       res.json({ status: 'success', data: sermons });
     })
   })
-  
+
   .post((req, res) => {
     let sermon = new Sermon({
       title: req.body.title,

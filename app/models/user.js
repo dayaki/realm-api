@@ -14,7 +14,9 @@ var UserSchema = new Schema({
   },
   password: String,
   photo: String,
-  onesignal: String
+  onesignal: String,
+  isAdmin: Boolean,
+  adminRole: String
 });
 
 module.exports = mongoose.model('User', UserSchema);
