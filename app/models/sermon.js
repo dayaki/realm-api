@@ -6,7 +6,11 @@ var SermonSchema = new Schema({
   image: String,
   preacher: String,
   featured: String,
-  url: String,
+  audio: String,
+  date: String,
+  tags: [{
+    type: String
+  }]
 });
 
 module.exports = mongoose.model('Sermon', SermonSchema);

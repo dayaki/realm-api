@@ -1,7 +1,7 @@
 {
-  "name": "candlite_api",
+  "name": "realm_api",
   "version": "1.0.0",
-  "description": "API for the candlite app",
+  "description": "API for the Realm of Glory app",
   "main": "server.js",
   "scripts": {
     "start": "node ./server.js"
@@ -12,20 +12,13 @@
   "author": "Dayo Akinkuowo",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^2.0.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "http": "0.0.0",
-    "jsonwebtoken": "^8.2.1",
-    "jwt-simple": "^0.5.1",
     "moment": "^2.22.0",
     "mongoose": "^5.0.14",
-    "morgan": "^1.9.0",
-    "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0",
-    "randomcolor": "^0.5.3",
     "slug": "^0.9.1"
   }
 }

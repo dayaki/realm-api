@@ -5,7 +5,6 @@ let bcrypt      = require('bcrypt-nodejs');
 let cors        = require('cors');
 let slug        = require('slug');
 let config      = require('./config');
-var randomColor = require('randomcolor');
 
 // Models
 let User      = require('./app/models/user');
@@ -25,12 +24,6 @@ app.use('/api', router);
 
 // DB connection
 mongoose.connect(config.database);
-
-// Middleware
-// router.use((req, res, next) => {
-//   console.log('calling the middleware');
-//   next();
-// });
 
 router.get('/', (req, res) => {
   res.send("yeah it's working...")
@@ -155,6 +148,35 @@ router.route('/users')
       });
     }
 });
+
+// Sermons
+router.route('/sermons')
+
+  .get((req, res) => {
+    Sermon.find({}, (err, sermons) => {
+      if (err) res.json({ status: 'error', msg: err });
+
+      res.json({ status: 'success', data: sermons });
+    })
+  })
+  
+  .post((req, res) => {
+    let sermon = new Sermon({
+      title: req.body.title,
+      preacher: req.body.preacher,
+      image: req.body.image,
+      audio: req.body.audio,
+      date: req.body.date,
+      featured: req.body.featured,
+      tags: req.body.tags.split(',')
+    });
+
+    sermon.save((err, sermom) => {
+      if (err) res.json({ status: 'error' });
+
+      res.json({ status: 'success', data: sermon });
+    })
+  })
 
 // Notes
 router.get('/notes/:id', (req, res) => {
