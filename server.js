@@ -191,7 +191,7 @@ router.route('/users')
 router.route('/sermons')
 
   .get((req, res) => {
-    Sermon.find({}).sort({ created_at: 1}).exec((err, articles) => {
+    Sermon.find({}).sort({ created_at: 1}).exec((err, sermons) => {
       if(err) res.send('Error fetching articles');
 
       res.json({ status: 'success', data: sermons });
