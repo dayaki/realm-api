@@ -191,16 +191,11 @@ router.route('/users')
 router.route('/sermons')
 
   .get((req, res) => {
-    Sermon.find({}).sort({ date: 1}).exec((err, sermons) => {
-      if(err) res.send('Error fetching articles');
+    Sermon.find({}, (err, sermons) => {
+      if (err) res.json({ status: 'error', msg: err });
 
       res.json({ status: 'success', data: sermons });
-    });
-    // Sermon.find({}, (err, sermons) => {
-    //   if (err) res.json({ status: 'error', msg: err });
-
-    //   res.json({ status: 'success', data: sermons });
-    // })
+    })
   })
 
   .post((req, res) => {
