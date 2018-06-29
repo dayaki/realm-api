@@ -197,18 +197,25 @@ router.post('/notes', (req, res) => {
     author: req.body.user
   });
 
-  note.save((err, user) => {
+  note.save((err, note) => {
     if(err) res.json({ status: 'error', msg: err.message });
-    Note.findById(userId).sort({ created_at: -1}).exec((err, notes) => {
+
+    Note.find({_id: userId}).sort({ created_at: -1}).exec((err, notes) => {
+      if(err) res.json({ status: 'Error', msg: err })
       res.json({ status: 'success', data: notes });
-    })
+    });
   });
 });
 
 // Delete Note
 router.post('/note/delete', (req, res) => {
   Note.findByIdAndRemove(req.body.note, (err, res) => {
-    res.json({status: 'success'});
+    if(err) res.json({status: 'error', msg: err});
+
+    Note.find({_id: userId}).sort({ created_at: -1 }).exec((err, notes) => {
+      if(err) res.json({ status: 'Error', msg: err })
+      res.json({ status: 'success', data: notes });
+    });
   });
 })
 
