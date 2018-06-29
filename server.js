@@ -207,6 +207,21 @@ router.post('/notes', (req, res) => {
   });
 });
 
+// Update Note
+router.post('/note/update', (req, res) => {
+  Note.findByIdAndUpdate(req.body.note, {$set: {
+    name: req.body.title,
+    content: req.body.content
+  }}, {new: true}, (err, note) => {
+    if(err) res.json({ status: 'error', msg: err });
+
+    Note.find({author: req.body.user}).sort({ created_at: -1}).exec((err, notes) => {
+      if(err) res.json({ status: 'Error', msg: err })
+      res.json({ status: 'success', data: notes });
+    });
+  });
+})
+
 // Delete Note
 router.post('/note/delete', (req, res) => {
   Note.findByIdAndRemove(req.body.note, (err, res) => {
