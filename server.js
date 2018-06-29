@@ -41,7 +41,8 @@ router.post('/auth/user', (req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
-        onesignal: req.body.onesignal
+        onesignal: req.body.onesignal,
+        isAdmin: false
       });
 
       newUser.save((err, user) => {
@@ -97,44 +98,6 @@ router.post('/auth/fb', (req, res) => {
     } else {
       res.json({ status: 'success', data: user });
     };
-  });
-
-});
-
-// Admin Auth
-router.post('/auth/admin', (req, res) => {
-  User.findOne({
-    email: req.body.username,
-    isAdmin: true
-  }, (err, user) => {
-    if (err) res.json({ status: 'error', msg: err });
-
-    if (user === null) {
-      res.json({ status: 'error', msg: 'User not found.' });
-    } else {
-      if (!bcrypt.compareSync(req.body.password, user.password)) {
-        res.json({ status: 'error', msg: 'Invalid Username or Password.' });
-      } else {
-        res.json({ status: 'success', data: user });
-      }
-    }
-
-  });
-});
-
-router.post('/admin/new', (req, res) => {
-  let user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password),
-    isAdmin: true,
-    adminRole: req.body.role
-  });
-
-  user.save((err, user) => {
-    if(err) res.json({ status: 'error', data: err });
-
-    res.json({ status: 'success', data: user });
   });
 
 });
@@ -226,20 +189,28 @@ router.get('/notes/:id', (req, res) => {
 });
 
 router.post('/notes', (req, res) => {
+  let userId = req.body.user;
+
   let note = new Note({
     title: req.body.title,
-    preacher: req.body.preacher,
     content: req.body.content,
     author: req.body.user
   });
 
   note.save((err, user) => {
     if(err) res.json({ status: 'error', msg: err.message });
-
-    res.json({ status: 'success', data: note });
+    Note.findById(userId).sort({ created_at: -1}).exec((err, notes) => {
+      res.json({ status: 'success', data: notes });
+    })
   });
-
 });
+
+// Delete Note
+router.post('/note/delete', (req, res) => {
+  Note.findByIdAndRemove(req.body.note, (err, res) => {
+    res.json({status: 'success'});
+  });
+})
 
 // Online Giving
 router.get('/giving', (req, res) => {
@@ -264,6 +235,49 @@ router.post('/giving', (req, res) => {
     if(err) res.json({ status: 'error', msg: err });
 
     res.json({ status: 'success', data: give });
+  });
+
+});
+
+
+/*
+    Admin
+*/
+
+// Admin Auth
+router.post('/auth/admin', (req, res) => {
+  User.findOne({
+    email: req.body.username,
+    isAdmin: true
+  }, (err, user) => {
+    if (err) res.json({ status: 'error', msg: err });
+
+    if (user === null) {
+      res.json({ status: 'error', msg: 'User not found.' });
+    } else {
+      if (!bcrypt.compareSync(req.body.password, user.password)) {
+        res.json({ status: 'error', msg: 'Invalid Username or Password.' });
+      } else {
+        res.json({ status: 'success', data: user });
+      }
+    }
+
+  });
+});
+
+router.post('/admin/new', (req, res) => {
+  let user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password),
+    isAdmin: true,
+    adminRole: req.body.role
+  });
+
+  user.save((err, user) => {
+    if(err) res.json({ status: 'error', data: err });
+
+    res.json({ status: 'success', data: user });
   });
 
 });
