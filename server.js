@@ -212,7 +212,7 @@ router.post('/note/delete', (req, res) => {
   Note.findByIdAndRemove(req.body.note, (err, res) => {
     if(err) res.json({status: 'error', msg: err});
 
-    Note.find({author: userId}).sort({ created_at: -1 }).exec((err, notes) => {
+    Note.find({author: req.body.user}).sort({ created_at: -1 }).exec((err, notes) => {
       if(err) res.json({ status: 'Error', msg: err })
       res.json({ status: 'success', data: notes });
     });
