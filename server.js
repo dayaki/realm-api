@@ -224,7 +224,7 @@ router.post('/note/update', (req, res) => {
 
 // Delete Note
 router.post('/note/delete', (req, res) => {
-  Note.findByIdAndRemove(req.body.note, (err, res) => {
+  Note.findByIdAndRemove(req.body.note, (err, note) => {
     if(err) res.json({status: 'error', msg: err});
 
     Note.find({author: req.body.user}).sort({ created_at: -1 }).exec((err, notes) => {
