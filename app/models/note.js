@@ -3,6 +3,7 @@ let Schema   = mongoose.Schema;
  
 var NoteSchema = new Schema({
   title: String,
+  preacher: String,
   content: String,
   author: {
     type: Schema.Types.ObjectId,

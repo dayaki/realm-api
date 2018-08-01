@@ -195,6 +195,7 @@ router.post('/notes', (req, res) => {
 
   let note = new Note({
     title: req.body.title,
+    preacher: req.body.preacher,
     content: req.body.content,
     author: req.body.user
   });
