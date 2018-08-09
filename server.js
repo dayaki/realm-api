@@ -213,14 +213,15 @@ router.post('/notes', (req, res) => {
 // Update Note
 router.post('/note/update', (req, res) => {
   Note.findByIdAndUpdate(req.body.note, {$set: {
-    name: req.body.title,
+    title: req.body.title,
+    preacher: req.body.preacher,
     content: req.body.content
-  }}, {new: true}, (err, note) => {
+  }}, (err, note) => {
     if(err) res.json({ status: 'error', msg: err });
 
     Note.find({author: req.body.user}).sort({ created_at: -1}).exec((err, notes) => {
-      if(err) res.json({ status: 'Error', msg: err })
-      res.json({ status: 'success', data: notes });
+      if (err) res.json({ status: 'Error', msg: err })
+      else res.json({ status: 'success', data: notes });
     });
   });
 })
