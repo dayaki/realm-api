@@ -11,6 +11,7 @@ let User      = require('./app/models/user');
 let Sermon    = require('./app/models/sermon');
 let Note      = require('./app/models/note');
 let Give      = require('./app/models/give');
+let Events    = require('./app/models/event');
 
 // Variables
 let app = express();
@@ -159,7 +160,7 @@ router.route('/sermons')
     Sermon.find({}, (err, sermons) => {
       if (err) res.json({ status: 'error', msg: err });
 
-      res.json({ status: 'success', data: sermons });
+      res.json({ status: 'success', data: sermons.reverse() });
     })
   })
 
@@ -263,6 +264,31 @@ router.post('/giving', (req, res) => {
     res.json({ status: 'success', data: give });
   });
 
+});
+
+// Events
+router.get('/events', (req, res) => {
+  Events.find({}, (err, events) => {
+    if (err) res.json({ status: 'error', msg: err })
+    else res.json({ status: 'success', data: events })
+  });
+});
+
+router.post('/events', (req, res) => {
+  let event = new Events({
+    title: req.body.title,
+    image: req.body.image,
+    desc: req.body.desc,
+    address: req.body.address,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    time: req.body.time
+  });
+
+  event.save((err, event) => {
+    if(err) res.json({ status: 'error', msg: err })
+    else res.json({ status: 'success', data: event })
+  });
 });
 
 
