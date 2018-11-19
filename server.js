@@ -349,7 +349,11 @@ router.get('/admin/vouchers', (req, res) => {
 });
 
 router.get('/admin/vouchers/new', (req, res) => {
-  res.json({ date: moment().add(1, 'months') })
+  let today = moment();
+  let nextMonth = moment().add(1, 'months');
+  let expired = today.isSameOrBefore(nextMonth);
+
+  res.json({ today, nextMonth, expired })
   // let length = 0;
   // while (length < 40 ) {
   //   let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
