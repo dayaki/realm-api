@@ -345,24 +345,33 @@ router.get('/admin/vouchers', (req, res) => {
   Voucher.find({ used: false}, (err, vouchers) => {
     if (err) res.json({ status: 'error', data: err })
     res.json({ status: 'success', data: vouchers })
-  })
+  });
 });
 
 router.get('/admin/vouchers/new', (req, res) => {
-  let today = moment();
-  let nextMonth = moment().add(1, 'months');
-  let expired = today.isSameOrBefore(nextMonth);
+  // let today = moment();
+  // let nextMonth = moment().add(1, 'months');
+  // let expired = today.isSameOrBefore(nextMonth);
+  // res.json({ today, nextMonth, expired })
 
-  res.json({ today, nextMonth, expired })
-  // let length = 0;
-  // while (length < 40 ) {
-  //   let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-  //   let vocher = new vouchers({
-  //     code: string,
-  //     expiry: moment().set('month', 3)
-  //   })
-  // }
-  // Voucher
+  let length = 0;
+  while (length < 20 ) {
+    let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    let voucher = new vouchers({
+      code: string,
+      expiry: moment().add(1, 'months'),
+      type: '1 Month'
+    });
+
+    voucher.save((err, vou) => {
+      if (err) res.json({ status: 'error' })
+    });
+  }
+
+  Voucher.find({ used: false}, (err2, vouchers) => {
+    if (err2) res.json({ status: 'error', data: err2 })
+    res.json({ status: 'success', data: vouchers })
+  });
 })
 
 // listen (start app with node server.js) =====================
