@@ -357,7 +357,7 @@ router.get('/admin/vouchers/new', (req, res) => {
   let length = 0;
   while (length < 20 ) {
     let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    let voucher = new vouchers({
+    let voucher = new Voucher({
       code: string,
       expiry: moment().add(1, 'months'),
       type: '1 Month'
