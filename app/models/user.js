@@ -13,9 +13,18 @@ var UserSchema = new Schema({
     required: true
   },
   password: String,
+  phone: String,
   photo: String,
   onesignal: String,
-  isAdmin: Boolean,
+  sub_active: {
+    type: Boolean,
+    default: false
+  },
+  sub_end: Date,
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   adminRole: String
 });
 

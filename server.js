@@ -5,6 +5,7 @@ let bcrypt      = require('bcrypt-nodejs');
 let cors        = require('cors');
 let slug        = require('slug');
 let config      = require('./config');
+let moment      = require('moment');
 
 // Models
 let User      = require('./app/models/user');
@@ -12,6 +13,8 @@ let Sermon    = require('./app/models/sermon');
 let Note      = require('./app/models/note');
 let Give      = require('./app/models/give');
 let Events    = require('./app/models/event');
+// let Vouchers  = equire('./app/models/vouchers');
+import Voucher from './vouchers';
 
 // Variables
 let app = express();
@@ -41,9 +44,9 @@ router.post('/auth/user', (req, res) => {
       let newUser = new User({
         name: req.body.name,
         email: req.body.email,
+        phone: req.body.phone,
         password: bcrypt.hashSync(req.body.password),
-        onesignal: req.body.onesignal,
-        isAdmin: false
+        onesignal: req.body.onesignal
       });
 
       newUser.save((err, user) => {
@@ -60,7 +63,7 @@ router.post('/auth/login', (req, res) => {
   let email = req.body.email;
   let pass = req.body.password;
 
-  User.findOne({email: email}, (err, user) => {
+  User.findOne({email: email, isAdmin: 'false'}, (err, user) => {
     if (err) res.json({ status: 'error', msg: err });
 
     if (user === null) {
@@ -152,6 +155,12 @@ router.route('/users')
       });
     }
 });
+
+router.post('/user/sub', (req, res) => {
+
+});
+
+///// END USER
 
 // Sermons
 router.route('/sermons')
@@ -293,7 +302,7 @@ router.post('/events', (req, res) => {
 
 
 /*
-    Admin
+    Admin Backend
 */
 
 // Admin Auth
@@ -331,8 +340,27 @@ router.post('/admin/new', (req, res) => {
 
     res.json({ status: 'success', data: user });
   });
-
 });
+
+router.get('/admin/vouchers', (req, res) => {
+  Voucher.find({ used: false}, (err, vouchers) => {
+    if (err) res.json({ status: 'error', data: err })
+    res.json({ status: 'success', data: vouchers })
+  })
+});
+
+router.get('/admin/vouchers/new', (req, res) => {
+  res.json({ date: moment().set('month', 3) })
+  // let length = 0;
+  // while (length < 40 ) {
+  //   let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  //   let vocher = new vouchers({
+  //     code: string,
+  //     expiry: moment().set('month', 3)
+  //   })
+  // }
+  // Voucher
+})
 
 // listen (start app with node server.js) =====================
 // app.listen(config.port);
