@@ -13,8 +13,7 @@ let Sermon    = require('./app/models/sermon');
 let Note      = require('./app/models/note');
 let Give      = require('./app/models/give');
 let Events    = require('./app/models/event');
-// let Vouchers  = equire('./app/models/vouchers');
-import Voucher from './vouchers';
+let Voucher   = require('./app/models/voucher');
 
 // Variables
 let app = express();
@@ -306,7 +305,7 @@ router.post('/events', (req, res) => {
 */
 
 // Admin Auth
-router.post('/auth/admin', (req, res) => {
+router.post('/admin/auth', (req, res) => {
   User.findOne({
     email: req.body.username,
     isAdmin: true
