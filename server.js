@@ -26,16 +26,17 @@ app.use(bodyParser.json({limit: '5mb'}));
 app.use('/api', router);
 
 // DB connection
-mongoose.connect(config.database);
+mongoose.connect(config.database, { useCreateIndex: true, useNewUrlParser: true });
 
 router.get('/', (req, res) => {
   res.send("yeah it's working...")
 });
 
 router.get('/sermons/update', (req, res) => {
+
   Sermon.find({}, (err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
-
+    allSermons = [];
     sermons.forEach(sermon => {
       // Sermon.findByIdAndUpdate(sermon._id, 
       //   {"$set": {
@@ -44,6 +45,7 @@ router.get('/sermons/update', (req, res) => {
       //     if (err) console.log('error', err)
       //     else console.log('done.')
       //   });
+      allSermons.push(sermon.date);
       const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
       console.log('_date', sermon.title);
       console.log('date_', then);
@@ -55,7 +57,7 @@ router.get('/sermons/update', (req, res) => {
           else console.log('done.')
       });
     });
-    res.json({ status: 'done...'});
+    res.json({ status: 'done...', data: allSermons});
   })
 });
 
