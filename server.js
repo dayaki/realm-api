@@ -36,18 +36,17 @@ router.get('/', (req, res) => {
 router.get('/sermons/update', (req, res) => {
   Sermon.find({}, (err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
-
+    
     sermons.forEach(sermon => {
-      console.log('------', sermon.date)
-      const then = new Date(sermon.date).toISOString();
-      console.log('------date_', then);
-      // Sermon.findByIdAndUpdate(sermon._id, 
-      //   {"$set": {
-      //     "isodate": then
-      //   }}, { new: false }, (err, one) => {
-      //     if (err) console.log('error', err)
-      //     else console.log('done.')
-      // });
+      const then = new Date(`${sermon.date} 01:20 UTC`).toISOString();
+      // console.log('date_', then);
+      Sermon.findByIdAndUpdate(sermon._id, 
+        {"$set": {
+          "isodate": then
+        }}, { new: false }, (err, one) => {
+          if (err) console.log('error', err)
+          else console.log('done.')
+      });
     });
     res.json({ status: 'done...'});
   })
