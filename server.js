@@ -41,11 +41,13 @@ router.get('/sermons/update', (req, res) => {
         {"_id": sermon._id}, 
         {"$set": {
           "slug": slug(sermon.title, {lower: true}) 
-        }}, callback);
+        }}, function(err, one) {
+          console.log('done.')
+        });
     });
     res.json({ status: 'done...'});
   })
-})
+});
 
 // Register new Email User
 router.post('/auth/user', (req, res) => {
