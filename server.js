@@ -46,8 +46,8 @@ router.get('/sermons/update', (req, res) => {
     //     else console.log('done.....')
     // });
     sermons.forEach(sermon => {
-      let today = "05 October 2011";
-      const then = new Date(today + ' 01:20 UTC').toISOString();
+      const then = new Date(`${sermon.date} 01:20 UTC`).toISOString();
+      console.log('date_', then);
       Sermon.findByIdAndUpdate(sermon._id, 
         {"$set": {
           "isodate": then
