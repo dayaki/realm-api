@@ -37,12 +37,12 @@ router.get('/sermons/update', (req, res) => {
     if (err) res.json({ status: 'error', msg: err });
 
     sermons.forEach(sermon => {
-      sermon.update(
-        {"_id": sermon._id}, 
+      Sermon.findByIdAndUpdate(sermon._id, 
         {"$set": {
           "slug": slug(sermon.title, {lower: true}) 
-        }}, function(err, one) {
-          console.log('done.')
+        }}, (err, one) => {
+          if (err) console.log('error', err)
+          else console.log('done.')
         });
     });
     res.json({ status: 'done...'});
