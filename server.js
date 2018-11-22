@@ -50,10 +50,23 @@ router.get('/', (req, res) => {
 // });
 
 router.get('/sermons/test', (req, res) => {
-  Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
+  // Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
+  //   if (err) res.json({ status: 'error', msg: err });
+  //   res.json({ status: sermons });
+  // });
+
+  Sermon.find().where('created_at').gte(new Date('2018, 0, 1')).exec((err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
     res.json({ status: sermons });
-  });
+  })
+
+//   Thing.find().where('age').gt(21)
+
+// // or
+// Thing.find().gt('age', 21)
+
+//   db.posts.find( //query today up to tonight
+//     {"created_on": {"$gte": new Date(2012, 7, 14), "$lt": new Date(2012, 7, 15)}})
 });
 
 // Register new Email User
