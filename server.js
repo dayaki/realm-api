@@ -38,6 +38,8 @@ router.get('/sermons/update', (req, res) => {
 
     sermons.forEach(sermon => {
       const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
+      // console.log('_date', sermon.title);
+      // console.log('date_', sermon.);
       Sermon.findByIdAndUpdate(sermon._id, 
         {"$set": {
           "isodate": then
