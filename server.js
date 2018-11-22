@@ -32,32 +32,28 @@ router.get('/', (req, res) => {
   res.send("yeah it's working...")
 });
 
-router.get('/sermons/update', (req, res) => {
-  Sermon.find({}, (err, sermons) => {
-    if (err) res.json({ status: 'error', msg: err });
+// router.get('/sermons/update', (req, res) => {
+//   Sermon.find({}, (err, sermons) => {
+//     if (err) res.json({ status: 'error', msg: err });
 
-    sermons.forEach(sermon => {
-      Sermon.findByIdAndUpdate(sermon._id, 
-        {"$set": {
-          "slug": slug(sermon.title, {lower: true}) 
-        }}, { new: false }, (err, one) => {
-          if (err) console.log('error', err)
-          else console.log('done.')
-        });
-    });
-    res.json({ status: 'done...'});
-  })
-});
+//     sermons.forEach(sermon => {
+//       Sermon.findByIdAndUpdate(sermon._id, 
+//         {"$set": {
+//           "slug": slug(sermon.title, {lower: true}) 
+//         }}, { new: false }, (err, one) => {
+//           if (err) console.log('error', err)
+//           else console.log('done.')
+//         });
+//     });
+//     res.json({ status: 'done...'});
+//   })
+// });
 
 router.get('/sermons/test', (req, res) => {
   Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
     if (err) res.json({ status: 'error', msg: err });
     res.json({ status: sermons });
   });
-  // Sermon.find({}, (err, sermons) => {
-  //   if (err) res.json({ status: 'error', msg: err });
-  //   res.json({ status: sermons });
-  // })
 });
 
 // Register new Email User
@@ -193,11 +189,15 @@ router.post('/user/sub', (req, res) => {
 router.route('/sermons')
 
   .get((req, res) => {
-    Sermon.find({}, (err, sermons) => {
+    Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
       if (err) res.json({ status: 'error', msg: err });
+      res.json({ status: 'success', data: sermons });
+    });
+    // Sermon.find({}, (err, sermons) => {
+    //   if (err) res.json({ status: 'error', msg: err });
 
-      res.json({ status: 'success', data: sermons.reverse() });
-    })
+    //   res.json({ status: 'success', data: sermons.reverse() });
+    // })
   })
 
   .post((req, res) => {
