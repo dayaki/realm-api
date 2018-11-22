@@ -38,7 +38,7 @@ router.get('/sermons/update', (req, res) => {
 
     sermons.forEach(sermon => {
       sermon.update(
-        {"_id": sermon[_id]}, 
+        {"_id": sermon._id}, 
         {"$set": {
           "slug": slug(req.body.title, {lower: true}) 
         }}, {new: false} , (err, one) => {
