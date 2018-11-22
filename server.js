@@ -26,7 +26,8 @@ app.use(bodyParser.json({limit: '5mb'}));
 app.use('/api', router);
 
 // DB connection
-mongoose.connect(config.database, { useCreateIndex: true, useNewUrlParser: true });
+mongoose.set('useCreateIndex', true)
+mongoose.connect(config.database, { useNewUrlParser: true });
 
 router.get('/', (req, res) => {
   res.send("yeah it's working...")
@@ -46,16 +47,16 @@ router.get('/sermons/update', (req, res) => {
       //     else console.log('done.')
       //   });
       allSermons.push(sermon.date);
-      const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
-      console.log('_date', sermon.title);
-      console.log('date_', then);
-      Sermon.findByIdAndUpdate(sermon._id, 
-        {"$set": {
-          "isodate": then
-        }}, { new: false }, (err, one) => {
-          if (err) console.log('error', err)
-          else console.log('done.')
-      });
+      // const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
+      // console.log('_date', sermon.title);
+      // console.log('date_', then);
+      // Sermon.findByIdAndUpdate(sermon._id, 
+      //   {"$set": {
+      //     "isodate": then
+      //   }}, { new: false }, (err, one) => {
+      //     if (err) console.log('error', err)
+      //     else console.log('done.')
+      // });
     });
     res.json({ status: 'done...', data: allSermons});
   })
