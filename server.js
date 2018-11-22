@@ -59,7 +59,7 @@ router.get('/sermons/update', (req, res) => {
     //       else console.log('done.')
     //   });
     // });
-    res.json({ status: 'done...', data: allSermons});
+    res.json({ status: 'done...'});
   })
 });
 
