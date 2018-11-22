@@ -9,6 +9,7 @@ var SermonSchema = new Schema({
   featured: String,
   audio: String,
   date: String,
+  isodate: String,
   created_at: {
     type: Date,
     default: Date.now

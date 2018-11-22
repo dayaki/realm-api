@@ -32,43 +32,31 @@ router.get('/', (req, res) => {
   res.send("yeah it's working...")
 });
 
-// router.get('/sermons/update', (req, res) => {
-//   Sermon.find({}, (err, sermons) => {
-//     if (err) res.json({ status: 'error', msg: err });
+router.get('/sermons/update', (req, res) => {
+  Sermon.find({}, (err, sermons) => {
+    if (err) res.json({ status: 'error', msg: err });
 
-//     sermons.forEach(sermon => {
-//       Sermon.findByIdAndUpdate(sermon._id, 
-//         {"$set": {
-//           "slug": slug(sermon.title, {lower: true}) 
-//         }}, { new: false }, (err, one) => {
-//           if (err) console.log('error', err)
-//           else console.log('done.')
-//         });
-//     });
-//     res.json({ status: 'done...'});
-//   })
-// });
+    sermons.forEach(sermon => {
+      const then = new Date(sermon.date).toISOString();
+      Sermon.findByIdAndUpdate(sermon._id, 
+        {"$set": {
+          "isodate": then 
+        }}, { new: false }, (err, one) => {
+          if (err) console.log('error', err)
+          else console.log('done.')
+        });
+    });
+    res.json({ status: 'done...'});
+  })
+});
 
 router.get('/sermons/test', (req, res) => {
-  // Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
-  //   if (err) res.json({ status: 'error', msg: err });
-  //   res.json({ status: sermons });
-  // });
   const then = new Date('2018-01-01').toISOString();
-  // res.json({ status: then });
 
-  Sermon.find().where('created_at').gte(then).sort({created_at: -1}).exec((err, sermons) => {
+  Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
     res.json({ status: sermons });
-  })
-
-//   Thing.find().where('age').gt(21)
-
-// // or
-// Thing.find().gt('age', 21)
-
-//   db.posts.find( //query today up to tonight
-//     {"created_on": {"$gte": new Date(2012, 7, 14), "$lt": new Date(2012, 7, 15)}})
+  });
 });
 
 // Register new Email User
