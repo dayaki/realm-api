@@ -34,31 +34,28 @@ router.get('/', (req, res) => {
 });
 
 router.get('/sermons/update', (req, res) => {
-
   Sermon.find({}, (err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
 
-    const then = new Date('05 October 2011 14:48 UTC').toISOString();
-    Sermon.findByIdAndUpdate('5b8201ae61dcde00048fb055', 
-      {"$set": {
-        "isodate": then
-      }}, { new: false }, (err, one) => {
-        if (err) console.log('error', err)
-        else console.log('done.....')
-    });
-    // allSermons = [];
-    // sermons.forEach(sermon => {
-    //   const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
-    //   console.log('_date', sermon.title);
-    //   console.log('date_', then);
-    //   Sermon.findByIdAndUpdate(sermon._id, 
-    //     {"$set": {
-    //       "isodate": then
-    //     }}, { new: false }, (err, one) => {
-    //       if (err) console.log('error', err)
-    //       else console.log('done.')
-    //   });
+    // const then = new Date('05 October 2011 14:48 UTC').toISOString();
+    // Sermon.findByIdAndUpdate('5b8201ae61dcde00048fb055', 
+    //   {"$set": {
+    //     "isodate": then
+    //   }}, { new: false }, (err, one) => {
+    //     if (err) console.log('error', err)
+    //     else console.log('done.....')
     // });
+    sermons.forEach(sermon => {
+      const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
+      console.log('date_', then);
+      Sermon.findByIdAndUpdate(sermon._id, 
+        {"$set": {
+          "isodate": then
+        }}, { new: false }, (err, one) => {
+          if (err) console.log('error', err)
+          else console.log('done.')
+      });
+    });
     res.json({ status: 'done...'});
   })
 });
