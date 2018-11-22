@@ -37,16 +37,14 @@ router.get('/sermons/update', (req, res) => {
     if (err) res.json({ status: 'error', msg: err });
 
     sermons.forEach(sermon => {
-      // const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
-      console.log('_date', sermon.title);
-      console.log('date_', sermon.date);
-      // Sermon.findByIdAndUpdate(sermon._id, 
-      //   {"$set": {
-      //     "isodate": then 
-      //   }}, { new: false }, (err, one) => {
-      //     if (err) console.log('error', err)
-      //     else console.log('done.')
-      //   });
+      const then = new Date(sermon.date + ' 01:20 UTC').toISOString();
+      Sermon.findByIdAndUpdate(sermon._id, 
+        {"$set": {
+          "isodate": then
+        }}, { new: false }, (err, one) => {
+          if (err) console.log('error', err)
+          else console.log('done.')
+        });
     });
     res.json({ status: 'done...'});
   })
