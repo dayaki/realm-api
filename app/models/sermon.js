@@ -3,6 +3,7 @@ let Schema   = mongoose.Schema;
  
 var SermonSchema = new Schema({
   title: String,
+  slug: String,
   image: String,
   preacher: String,
   featured: String,

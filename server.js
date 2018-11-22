@@ -32,6 +32,23 @@ router.get('/', (req, res) => {
   res.send("yeah it's working...")
 });
 
+router.get('/sermons/update', (req, res) => {
+  Sermon.find({}, (err, sermons) => {
+    if (err) res.json({ status: 'error', msg: err });
+
+    sermons.forEach(sermon => {
+      sermon.update(
+        {"_id": sermon[_id]}, 
+        {"$set": {
+          "slug": slug(req.body.title, {lower: true}) 
+        }}, {new: false} , (err, one) => {
+          if (err) res.json({ status: 'error' })
+        });
+    });
+    res.json({ status: 'done...'});
+  })
+})
+
 // Register new Email User
 router.post('/auth/user', (req, res) => {
   User.findOne({email: req.body.email}, (err, data) => {
@@ -175,6 +192,7 @@ router.route('/sermons')
   .post((req, res) => {
     let sermon = new Sermon({
       title: req.body.title,
+      slug: slug(req.body.title, {lower: true}),
       preacher: req.body.preacher,
       image: req.body.image,
       audio: req.body.audio,
