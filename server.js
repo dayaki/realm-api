@@ -33,33 +33,14 @@ router.get('/', (req, res) => {
   res.send("yeah it's working...")
 });
 
-router.get('/sermons/update', (req, res) => {
-  Sermon.find({}, (err, sermons) => {
-    if (err) res.json({ status: 'error', msg: err });
-    
-    sermons.forEach(sermon => {
-      const then = new Date(`${sermon.date} 01:20 UTC`).toISOString();
-      // console.log('date_', then);
-      Sermon.findByIdAndUpdate(sermon._id, 
-        {"$set": {
-          "isodate": then
-        }}, { new: false }, (err, one) => {
-          if (err) console.log('error', err)
-          else console.log('done.')
-      });
-    });
-    res.json({ status: 'done...'});
-  })
-});
+// router.get('/sermons/test', (req, res) => {
+//   const then = new Date('2018-01-01').toISOString();
 
-router.get('/sermons/test', (req, res) => {
-  const then = new Date('2018-01-01').toISOString();
-
-  Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
-    if (err) res.json({ status: 'error', msg: err });
-    res.json({ status: sermons });
-  });
-});
+//   Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
+//     if (err) res.json({ status: 'error', msg: err });
+//     res.json({ status: sermons });
+//   });
+// });
 
 // Register new Email User
 router.post('/auth/user', (req, res) => {
@@ -194,10 +175,16 @@ router.post('/user/sub', (req, res) => {
 router.route('/sermons')
 
   .get((req, res) => {
-    Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
+    const then = new Date('2018-01-01').toISOString();
+    Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
       if (err) res.json({ status: 'error', msg: err });
       res.json({ status: 'success', data: sermons });
     });
+
+    // Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
+    //   if (err) res.json({ status: 'error', msg: err });
+    //   res.json({ status: 'success', data: sermons });
+    // });
     // Sermon.find({}, (err, sermons) => {
     //   if (err) res.json({ status: 'error', msg: err });
 
@@ -213,6 +200,7 @@ router.route('/sermons')
       image: req.body.image,
       audio: req.body.audio,
       date: req.body.date,
+      isodate: new Date(Date.now()).toISOString(),
       featured: req.body.featured,
       tags: req.body.tags.split(',')
     });
