@@ -41,9 +41,7 @@ router.get('/sermons/update', (req, res) => {
         {"_id": sermon._id}, 
         {"$set": {
           "slug": slug(sermon.title, {lower: true}) 
-        }}, {new: false} , (err, one) => {
-          if (err) res.json({ status: 'error' })
-        });
+        }}, callback);
     });
     res.json({ status: 'done...'});
   })
