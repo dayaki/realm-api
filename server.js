@@ -40,7 +40,7 @@ router.get('/sermons/update', (req, res) => {
       sermon.update(
         {"_id": sermon._id}, 
         {"$set": {
-          "slug": slug(req.body.title, {lower: true}) 
+          "slug": slug(sermon.title, {lower: true}) 
         }}, {new: false} , (err, one) => {
           if (err) res.json({ status: 'error' })
         });
