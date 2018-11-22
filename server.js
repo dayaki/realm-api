@@ -54,8 +54,10 @@ router.get('/sermons/test', (req, res) => {
   //   if (err) res.json({ status: 'error', msg: err });
   //   res.json({ status: sermons });
   // });
+  const then = new Date('2018-01-01').toISOString();
+  // res.json({ status: then });
 
-  Sermon.find().where('created_at').gte(new Date('2018, 0, 1').toISOString()).exec((err, sermons) => {
+  Sermon.find().where('created_at').gte(then).exec((err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
     res.json({ status: sermons });
   })
