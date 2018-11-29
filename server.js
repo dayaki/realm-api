@@ -230,11 +230,11 @@ router.get('/events', (req, res) => {
 });
 
 // Support email
-router.post('/support', (req, res) => {
+router.get('/support', (req, res) => {
   let smtpConfig = {
-    host: 'host51.registrar-servers.com',
+    host: 'mail.realmofglory.org',
     port: 465,
-    secure: true,
+    secure: false,
     auth: {
       user: '	mailer@realmofglory.org',
       pass: 'realmHQ01'
