@@ -7,7 +7,6 @@ let slug        = require('slug');
 let config      = require('./config');
 let moment      = require('moment');
 let OneSignal   = require('onesignal-node');
-const nodemailer = require('nodemailer');
 let Email 	    = require("emailjs");
 
 // Models
@@ -231,7 +230,7 @@ router.get('/events', (req, res) => {
 });
 
 // Support email
-router.get('/support', (req, res) => {
+router.post('/support', (req, res) => {
   const server 	= Email.server.connect({
     user:    "mailer@realmofglory.org",
     password:"realmHQ01",
@@ -239,40 +238,17 @@ router.get('/support', (req, res) => {
     ssl:     true
   });
 
-  // send the message and get a callback with an error or details of the message that was sent
   server.send({
-    text:    "i hope this works",
-    from:    "Realm Mailer <mailer@realmofglory.org>",
-    to:      "Dave <me@sprypixels.com>",
-    subject: "testing emailjs"
-  }, function(err, message) { console.log(err || message); });
-  // let smtpConfig = {
-  //   host: 'host51.registrar-servers.com',
-  //   port: 465,
-  //   secure: true,
-  //   auth: {
-  //     user: 'mailer@realmofglory.org',
-  //     pass: 'realmHQ01'
-  //   },
-  //   tls: {
-  //     rejectUnauthorized: false
-  //   }
-  // };
+    text:    req.body.message,
+    from:    `${req.body.name} <${req.body.email}>`,
+    to:      "Web Team <me@sprypixels.com>",
+    // to:      "Web Team <webteam@realmofglory.org>",
+    subject: "Support Message from App"
+  }, function(err, message) { 
+   if (err) res.json({ status: 'Error', msg: err})
+   res.json({status: 'success', data: message })
+  });
 
-  // const transporter = nodemailer.createTransport(smtpConfig);
-  // const mainOptions = {
-  //   from: 'mailer@realmofglory.org',
-  //   to: 'me@sprypixels.com',
-  //   subject: 'Hello from Server',
-  //   text: 'hello world!',
-  //   html: '<b>Hello World!</b>',
-  // };
-  // const callback = function (err, info) {
-  //   if (err) { throw err }
-  //   console.log('sent');
-  // }
-
-  // transporter.sendMail(mainOptions, callback);
 });
 
 
