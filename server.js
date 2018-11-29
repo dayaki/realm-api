@@ -369,13 +369,6 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   // let nextMonth = moment().add(1, 'months');
   // let expired = today.isSameOrBefore(nextMonth);
   // res.json({ today, nextMonth, expired })
-  const vouchers = genVoucher.generate({
-    prefix: "ROG-",
-    length: 9,
-    count: 5,
-    charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    pattern: "###-####-##",
-  });
 
   if (req.params.type === 1) {
     let expiry = moment().add(1, 'months').toISOString();
@@ -396,6 +389,14 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   }
 
   function saveVouchers(expiry, type) {
+    const vouchers = genVoucher.generate({
+      prefix: "ROG-",
+      length: 9,
+      count: 5,
+      charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      pattern: "###-####-##",
+    });
+    
     vouchers.forEach(voucher => {
       let vouc = new Voucher({
         code: voucher,
