@@ -372,7 +372,7 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   const vouchers = genVoucher.generate({
     prefix: "ROG-",
     length: 9,
-    count: 50,
+    count: 5,
     charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     pattern: "###-####-##",
   });
