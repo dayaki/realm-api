@@ -355,68 +355,68 @@ router.get('/admin/vouchers/new', (req, res) => {
   // let nextMonth = moment().add(1, 'months');
   // let expired = today.isSameOrBefore(nextMonth);
   // res.json({ today, nextMonth, expired })
-  const type = req.body.type;
-  if (type === 1) {
-    while (length < 20 ) {
-      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      let voucher = new Voucher({
-        code: string,
-        expiry: moment().add(1, 'months'),
-        type: '1 Month'
-      });
+  // const type = req.body.type;
+  // if (type === 1) {
+  //   while (length < 20 ) {
+  //     let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  //     let voucher = new Voucher({
+  //       code: string,
+  //       expiry: moment().add(1, 'months'),
+  //       type: '1 Month'
+  //     });
   
-      voucher.save((err, vou) => {
-        if (err) res.json({ status: 'error' })
-      });
+  //     voucher.save((err, vou) => {
+  //       if (err) res.json({ status: 'error' })
+  //     });
   
-      length = length + 1;
-    }
-  } else if (type === 3) {
-    while (length < 20 ) {
-      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      let voucher = new Voucher({
-        code: string,
-        expiry: moment().add(3, 'months'),
-        type: '3 Months'
-      });
+  //     length = length + 1;
+  //   }
+  // } else if (type === 3) {
+  //   while (length < 20 ) {
+  //     let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  //     let voucher = new Voucher({
+  //       code: string,
+  //       expiry: moment().add(3, 'months'),
+  //       type: '3 Months'
+  //     });
   
-      voucher.save((err, vou) => {
-        if (err) res.json({ status: 'error' })
-      });
+  //     voucher.save((err, vou) => {
+  //       if (err) res.json({ status: 'error' })
+  //     });
   
-      length = length + 1;
-    }
-  } else if (type === 6) {
-    while (length < 20 ) {
-      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      let voucher = new Voucher({
-        code: string,
-        expiry: moment().add(6, 'months'),
-        type: '6 Months'
-      });
+  //     length = length + 1;
+  //   }
+  // } else if (type === 6) {
+  //   while (length < 20 ) {
+  //     let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  //     let voucher = new Voucher({
+  //       code: string,
+  //       expiry: moment().add(6, 'months'),
+  //       type: '6 Months'
+  //     });
   
-      voucher.save((err, vou) => {
-        if (err) res.json({ status: 'error' })
-      });
+  //     voucher.save((err, vou) => {
+  //       if (err) res.json({ status: 'error' })
+  //     });
   
-      length = length + 1;
-    }
-  } else if (type === 12) {
-    while (length < 20 ) {
-      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      let voucher = new Voucher({
-        code: string,
-        expiry: moment().add(12, 'months'),
-        type: '1 Year'
-      });
+  //     length = length + 1;
+  //   }
+  // } else if (type === 12) {
+  //   while (length < 20 ) {
+  //     let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  //     let voucher = new Voucher({
+  //       code: string,
+  //       expiry: moment().add(12, 'months'),
+  //       type: '1 Year'
+  //     });
   
-      voucher.save((err, vou) => {
-        if (err) res.json({ status: 'error' })
-      });
+  //     voucher.save((err, vou) => {
+  //       if (err) res.json({ status: 'error' })
+  //     });
   
-      length = length + 1;
-    }
-  }
+  //     length = length + 1;
+  //   }
+  // }
 
   let length = 0;
   while (length < 20 ) {
@@ -434,13 +434,15 @@ router.get('/admin/vouchers/new', (req, res) => {
     length = length + 1;
   }
 
-  Voucher.find({ used: false}, (err2, vouchers) => {
-    if (err2) res.json({ status: 'error', data: err2 })
-    res.json({ status: 'success', data: vouchers })
-  });
+  res.json({ status: 'success' })
+
+  // Voucher.find({ used: false}, (err2, vouchers) => {
+  //   if (err2) res.json({ status: 'error', data: err2 })
+  //   res.json({ status: 'success', data: vouchers })
+  // });
 });
 
-// fetch all attendance
+// Fetch all attendance
 router.get('/admin/attendance', (req, res) => {
   Attendance.find({}, (err, attn) => {
     if (err) res.json({ status: 'error', msg: err })
