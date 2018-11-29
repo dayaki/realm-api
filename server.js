@@ -16,6 +16,7 @@ let Note      = require('./app/models/note');
 let Give      = require('./app/models/give');
 let Events    = require('./app/models/event');
 let Voucher   = require('./app/models/voucher');
+let Attendance = require('./app/models/attendance');
 
 // Variables
 let app = express();
@@ -437,7 +438,34 @@ router.get('/admin/vouchers/new', (req, res) => {
     if (err2) res.json({ status: 'error', data: err2 })
     res.json({ status: 'success', data: vouchers })
   });
+});
+
+// fetch all attendance
+router.get('/admin/attendance', (req, res) => {
+  Attendance.find({}, (err, attn) => {
+    if (err) res.json({ status: 'error', msg: err })
+    res.json({ status: 'success', data: attn })
+  })
+});
+
+// Post Attendance
+router.post('/admin/attendance', (req, res) => {
+  let attend = new Attendance({
+    date: req.body.date,
+    iosdate: new Date(req.body.date).toISOString(),
+    men: req.body.men,
+    women: req.body.women,
+    children: req.body.children,
+    summary: req.body.summary,
+    serviceType: req.body.serviceType,
+  });
+
+  attend.save((err, attn) => {
+    if (err) res.json({ status: 'error', msg: err })
+    res.json({ status: 'success', data: attn })
+  });
 })
+
 
 // listen (start app with node server.js) =====================
 // app.listen(config.port);
