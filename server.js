@@ -364,22 +364,35 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     pattern: "###-####-##",
   });
 
-  res.json({ status: vouchers });
+  let type = '', expiry = '', length = 0;
+  if (req.params.type === 1) {
+    expiry = moment().add(1, 'months').toISOString();
+    type = '1 Month';
+  } else if (req.params.type === 3) {
+    expiry = moment().add(3, 'months').toISOString();
+    type = '3 Months';
+  } else if (req.params.type === 6) {
+    expiry = moment().add(6, 'months').toISOString();
+    type = '6 Months';
+  } else if (req.params.type === 12) {
+    expiry = moment().add(12, 'months').toISOString();
+    type = '1 year';
+  }
 
-  // let type = '', expiry = '', length = 0;
-  // if (req.params.type === 1) {
-  //   expiry = moment().add(1, 'months').toISOString();
-  //   type = '1 Month';
-  // } else if (req.params.type === 3) {
-  //   expiry = moment().add(3, 'months').toISOString();
-  //   type = '3 Months';
-  // } else if (req.params.type === 6) {
-  //   expiry = moment().add(6, 'months').toISOString();
-  //   type = '6 Months';
-  // } else if (req.params.type === 12) {
-  //   expiry = moment().add(12, 'months').toISOString();
-  //   type = '1 year';
-  // }
+  vouchers.forEach(voucher => {
+    let voucher = new Voucher({
+      code: voucher,
+      expiry,
+      type
+    });
+    
+    voucher.save((err, vou) => {
+      if (err) res.json({ status: 'error' })
+    });
+
+  });
+
+  res.json({ status: 'success' });
 
   // while (length < 10 ) {
   //   let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

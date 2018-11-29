@@ -13,7 +13,10 @@ var VouchersSchema = new Schema({
     type: Boolean,
     default: false
   },
-  timesUsed: Number,
+  timesUsed: {
+    type: Number,
+    default: 0
+  },
   type: String,
   created_at: {
     type: Date,
