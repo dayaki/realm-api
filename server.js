@@ -232,7 +232,7 @@ router.get('/events', (req, res) => {
 // Support email
 router.get('/support', (req, res) => {
   let smtpConfig = {
-    host: 'mail.realmofglory.org',
+    host: 'host51.registrar-servers.com',
     port: 465,
     secure: false,
     auth: {
