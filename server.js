@@ -6,6 +6,8 @@ let cors        = require('cors');
 let slug        = require('slug');
 let config      = require('./config');
 let moment      = require('moment');
+let OneSignal   = require('onesignal-node');
+const nodemailer = require('nodemailer');
 
 // Models
 let User      = require('./app/models/user');
@@ -33,14 +35,10 @@ router.get('/', (req, res) => {
   res.send("yeah it's working...")
 });
 
-// router.get('/sermons/test', (req, res) => {
-//   const then = new Date('2018-01-01').toISOString();
 
-//   Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
-//     if (err) res.json({ status: 'error', msg: err });
-//     res.json({ status: sermons });
-//   });
-// });
+////////////////////////////////////////
+////////  APP API ROUTES //////////////
+////////////////////////////////////////
 
 // Register new Email User
 router.post('/auth/user', (req, res) => {
@@ -117,102 +115,36 @@ router.post('/auth/fb', (req, res) => {
 
 });
 
-
-
-///// User Routes
+// User
 router.route('/users')
   
-  .get((req, res) => {
-    User.find(function(err, users) {
-      if (err) return res.send(err.errmsg);
-      res.json({data: users});
-    })
+.get((req, res) => {
+  User.find(function(err, users) {
+    if (err) return res.send(err.errmsg);
+    res.json({data: users});
   })
+})
 
-  // Update User Photo
-  .patch((req, res) => {
-    User.findByIdAndUpdate(req.body.user_id, {$set: {
-      photo: req.body.photo
-    }}, {new: true}, (err, user) => {
-      if(err) res.send('Error updating photo');
-      res.json({status: 'valid', data: user});
-    });
-  })
+// Update User Photo
+.patch((req, res) => {
+  User.findByIdAndUpdate(req.body.user_id, {$set: {
+    photo: req.body.photo
+  }}, {new: false}, (err, user) => {
+    if (err) res.json({ status: 'Error', msg: err });
+    res.json({status: 'valid', data: user});
+  });
+})
 
-  // Update User info
-  .put((req, res) => {
-    if (req.body.password === undefined) {
-      User.findByIdAndUpdate(req.body.user_id, {$set: {
-        name: req.body.name,
-        phone: req.body.phone,
-        website: req.body.website
-      }}, {new: true}, (err, user) => {
-        if(err) res.send('Error updating user');
-        res.json({status: 'valid', data: user});
-      });
-
-    } else {
-
-      User.findByIdAndUpdate(req.body.user_id, {$set: {
-        name: req.body.name,
-        phone: req.body.phone,
-        website: req.body.website,
-        password: bcrypt.hashSync(req.body.password)
-      }}, {new: true}, (err, user) => {
-        if(err) res.send('Error updating user');
-        res.json({status: 'valid', data: user});
-      });
-    }
+// Get all Sermons
+router.get('/sermons', (req, res) => {
+  const then = new Date('2018-01-01').toISOString();
+  Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
+    if (err) res.json({ status: 'error', msg: err });
+    res.json({ status: 'success', data: sermons });
+  });
 });
 
-router.post('/user/sub', (req, res) => {
-
-});
-
-///// END USER
-
-// Sermons
-router.route('/sermons')
-
-  .get((req, res) => {
-    const then = new Date('2018-01-01').toISOString();
-    Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
-      if (err) res.json({ status: 'error', msg: err });
-      res.json({ status: 'success', data: sermons });
-    });
-
-    // Sermon.find({}).sort({created_at: -1}).exec(function(err, sermons) {
-    //   if (err) res.json({ status: 'error', msg: err });
-    //   res.json({ status: 'success', data: sermons });
-    // });
-    // Sermon.find({}, (err, sermons) => {
-    //   if (err) res.json({ status: 'error', msg: err });
-
-    //   res.json({ status: 'success', data: sermons.reverse() });
-    // })
-  })
-
-  .post((req, res) => {
-    let sermon = new Sermon({
-      title: req.body.title,
-      slug: slug(req.body.title, {lower: true}),
-      preacher: req.body.preacher,
-      image: req.body.image,
-      audio: req.body.audio,
-      date: req.body.date,
-      isodate: new Date(Date.now()).toISOString(),
-      featured: req.body.featured,
-      tags: req.body.tags.split(',')
-    });
-
-    sermon.save((err, sermom) => {
-      if (err) res.json({ status: 'error' });
-
-      res.json({ status: 'success', data: sermon });
-    })
-  })
-
-// Notes
+// Get user notes
 router.get('/notes/:id', (req, res) => {
   Note.find({author: req.params.id}, (err, notes) => {
     if(err) res.json({ status: 'error' });
@@ -221,6 +153,7 @@ router.get('/notes/:id', (req, res) => {
   });
 });
 
+// Post new note
 router.post('/notes', (req, res) => {
   let userId = req.body.user;
 
@@ -270,14 +203,6 @@ router.post('/note/delete', (req, res) => {
 })
 
 // Online Giving
-router.get('/giving', (req, res) => {
-  Give.find({}, (err, give) => {
-    if(err) res.json({ status: 'error', msg: err });
-
-    res.json({ status: 'success', data: give });
-  });
-});
-
 router.post('/giving', (req, res) => {
   let give = new Give({
     name: req.body.name,
@@ -304,27 +229,41 @@ router.get('/events', (req, res) => {
   });
 });
 
-router.post('/events', (req, res) => {
-  let event = new Events({
-    title: req.body.title,
-    image: req.body.image,
-    desc: req.body.desc,
-    address: req.body.address,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    time: req.body.time
-  });
+// Support email
+router.post('/support', (req, res) => {
+  let smtpConfig = {
+    host: 'host51.registrar-servers.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: '	mailer@realmofglory.org',
+      pass: 'realmHQ01'
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  };
 
-  event.save((err, event) => {
-    if(err) res.json({ status: 'error', msg: err })
-    else res.json({ status: 'success', data: event })
-  });
+  const transporter = nodemailer.createTransport(smtpConfig);
+  const mainOptions = {
+    from: 'mailer@realmofglory.org',
+    to: 'me@sprypixels.com',
+    subject: 'Hello from Server',
+    text: 'hello world!',
+    html: '<b>Hello World!</b>',
+  };
+  const callback = function (err, info) {
+    if (err) { throw err }
+    console.log('sent');
+  }
+
+  transporter.sendMail(mainOptions, callback);
 });
 
 
-/*
-    Admin Backend
-*/
+///////////////////////////////////////////
+////////  Backend API ROUTES //////////////
+///////////////////////////////////////////
 
 // Admin Auth
 router.post('/admin/auth', (req, res) => {
@@ -363,6 +302,55 @@ router.post('/admin/new', (req, res) => {
   });
 });
 
+// Post Sermons
+router.post('/admin/sermons', (req, res) => {
+  let sermon = new Sermon({
+    title: req.body.title,
+    slug: slug(req.body.title, {lower: true}),
+    preacher: req.body.preacher,
+    image: req.body.image,
+    audio: req.body.audio,
+    date: req.body.date,
+    isodate: new Date(Date.now()).toISOString(),
+    featured: req.body.featured,
+    tags: req.body.tags.split(',')
+  });
+
+  sermon.save((err, sermom) => {
+    if (err) res.json({ status: 'error' });
+    res.json({ status: 'success', data: sermon });
+  });
+
+});
+
+// Fetch online givers
+router.get('/giving', (req, res) => {
+  Give.find({}, (err, give) => {
+    if(err) res.json({ status: 'error', msg: err });
+
+    res.json({ status: 'success', data: give });
+  });
+});
+
+// Post Events
+router.post('/admin/events', (req, res) => {
+  let event = new Events({
+    title: req.body.title,
+    image: req.body.image,
+    desc: req.body.desc,
+    address: req.body.address,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    time: req.body.time
+  });
+
+  event.save((err, event) => {
+    if(err) res.json({ status: 'error', msg: err })
+    else res.json({ status: 'success', data: event })
+  });
+});
+
+// Vouchers
 router.get('/admin/vouchers', (req, res) => {
   Voucher.find({ used: false}, (err, vouchers) => {
     if (err) res.json({ status: 'error', data: err })
@@ -375,6 +363,68 @@ router.get('/admin/vouchers/new', (req, res) => {
   // let nextMonth = moment().add(1, 'months');
   // let expired = today.isSameOrBefore(nextMonth);
   // res.json({ today, nextMonth, expired })
+  const type = req.body.type;
+  if (type === 1) {
+    while (length < 20 ) {
+      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let voucher = new Voucher({
+        code: string,
+        expiry: moment().add(1, 'months'),
+        type: '1 Month'
+      });
+  
+      voucher.save((err, vou) => {
+        if (err) res.json({ status: 'error' })
+      });
+  
+      length = length + 1;
+    }
+  } else if (type === 3) {
+    while (length < 20 ) {
+      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let voucher = new Voucher({
+        code: string,
+        expiry: moment().add(3, 'months'),
+        type: '3 Months'
+      });
+  
+      voucher.save((err, vou) => {
+        if (err) res.json({ status: 'error' })
+      });
+  
+      length = length + 1;
+    }
+  } else if (type === 6) {
+    while (length < 20 ) {
+      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let voucher = new Voucher({
+        code: string,
+        expiry: moment().add(6, 'months'),
+        type: '6 Months'
+      });
+  
+      voucher.save((err, vou) => {
+        if (err) res.json({ status: 'error' })
+      });
+  
+      length = length + 1;
+    }
+  } else if (type === 12) {
+    while (length < 20 ) {
+      let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let voucher = new Voucher({
+        code: string,
+        expiry: moment().add(12, 'months'),
+        type: '1 Year'
+      });
+  
+      voucher.save((err, vou) => {
+        if (err) res.json({ status: 'error' })
+      });
+  
+      length = length + 1;
+    }
+  }
 
   let length = 0;
   while (length < 20 ) {
@@ -388,6 +438,8 @@ router.get('/admin/vouchers/new', (req, res) => {
     voucher.save((err, vou) => {
       if (err) res.json({ status: 'error' })
     });
+
+    length = length + 1;
   }
 
   Voucher.find({ used: false}, (err2, vouchers) => {
