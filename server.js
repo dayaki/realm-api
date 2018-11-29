@@ -377,35 +377,41 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     pattern: "###-####-##",
   });
 
-  let type = '', expiry = '';
   if (req.params.type === 1) {
-    expiry = moment().add(1, 'months').toISOString();
-    type = '1 Month';
+    let expiry = moment().add(1, 'months').toISOString();
+    let type = '1 Month';
+    saveVouchers(expiry, type);
   } else if (req.params.type === 3) {
-    expiry = moment().add(3, 'months').toISOString();
-    type = '3 Months';
+    let expiry = moment().add(3, 'months').toISOString();
+    let type = '3 Months';
+    saveVouchers(expiry, type);
   } else if (req.params.type === 6) {
-    expiry = moment().add(6, 'months').toISOString();
-    type = '6 Months';
+    let expiry = moment().add(6, 'months').toISOString();
+    let type = '6 Months';
+    saveVouchers(expiry, type);
   } else if (req.params.type === 12) {
-    expiry = moment().add(12, 'months').toISOString();
-    type = '1 year';
+    let expiry = moment().add(12, 'months').toISOString();
+    let type = '1 year';
+    saveVouchers(expiry, type);
   }
 
-  vouchers.forEach(voucher => {
-    let vouc = new Voucher({
-      code: voucher,
-      expiry: expiry,
-      type: type
-    });
-    
-    vouc.save((err, vou) => {
-      if (err) res.json({ status: 'error' })
+  function saveVouchers(expiry, type) {
+    vouchers.forEach(voucher => {
+      let vouc = new Voucher({
+        code: voucher,
+        expiry,
+        type
+      });
+      
+      vouc.save((err, vou) => {
+        if (err) res.json({ status: 'error' })
+      });
     });
 
-  });
+    res.json({ status: 'success' });
+  }
 
-  res.json({ status: 'success' });
+  // res.json({ status: 'success' });
 
   // while (length < 10 ) {
   //   let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
