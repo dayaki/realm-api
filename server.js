@@ -8,7 +8,7 @@ let config      = require('./config');
 let moment      = require('moment');
 let OneSignal   = require('onesignal-node');
 const nodemailer = require('nodemailer');
-let Email 	    = require("../../node_modules/emailjs/email");
+let Email 	    = require("emailjs");
 
 // Models
 let User      = require('./app/models/user');
