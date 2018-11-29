@@ -223,6 +223,19 @@ router.post('/giving', (req, res) => {
 
 });
 
+// Validate Voucher
+router.post('/voucher/verify', (req, res) => {
+  Voucher.findOne({ code: req.body.voucher }, (err, voucher) => {
+    if (err) res.json({ status: 'error', data: err })
+    
+    if (voucher === null) {
+      res.json({ status: 'invalid', msg: 'Invalid Voucher code' })
+    } else {
+      res.json({ status: 'success', data: vouchers })
+    }
+  });
+});
+
 // Events
 router.get('/events', (req, res) => {
   Events.find({}, (err, events) => {
@@ -345,7 +358,7 @@ router.post('/admin/events', (req, res) => {
 
 // Vouchers
 router.get('/admin/vouchers', (req, res) => {
-  Voucher.find({ used: false}, (err, vouchers) => {
+  Voucher.find({}, (err, vouchers) => {
     if (err) res.json({ status: 'error', data: err })
     res.json({ status: 'success', data: vouchers })
   });
@@ -359,7 +372,7 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   const vouchers = genVoucher.generate({
     prefix: "ROG-",
     length: 9,
-    count: 10,
+    count: 200,
     charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     pattern: "###-####-##",
   });
