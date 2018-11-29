@@ -8,7 +8,7 @@ let config      = require('./config');
 let moment      = require('moment');
 let OneSignal   = require('onesignal-node');
 const nodemailer = require('nodemailer');
-let Email 	    = require("email");
+let Email 	    = require("../../node_modules/emailjs/email");
 
 // Models
 let User      = require('./app/models/user');
@@ -232,39 +232,47 @@ router.get('/events', (req, res) => {
 
 // Support email
 router.get('/support', (req, res) => {
-//   const server 	= Email.server.connect({
-//     user:    "mailer@realmofglory.org",
-//     password:"realmHQ01",
-//     host:    "host51.registrar-servers.com",
-//     ssl:     true
-//  });
-  let smtpConfig = {
-    host: 'host51.registrar-servers.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: 'mailer@realmofglory.org',
-      pass: 'realmHQ01'
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  };
+  const server 	= Email.server.connect({
+    user:    "mailer@realmofglory.org",
+    password:"realmHQ01",
+    host:    "host51.registrar-servers.com",
+    ssl:     true
+  });
 
-  const transporter = nodemailer.createTransport(smtpConfig);
-  const mainOptions = {
-    from: 'mailer@realmofglory.org',
-    to: 'me@sprypixels.com',
-    subject: 'Hello from Server',
-    text: 'hello world!',
-    html: '<b>Hello World!</b>',
-  };
-  const callback = function (err, info) {
-    if (err) { throw err }
-    console.log('sent');
-  }
+  // send the message and get a callback with an error or details of the message that was sent
+  server.send({
+    text:    "i hope this works",
+    from:    "Realm Mailer <mailer@realmofglory.org>",
+    to:      "Dave <me@sprypixels.com>",
+    subject: "testing emailjs"
+  }, function(err, message) { console.log(err || message); });
+  // let smtpConfig = {
+  //   host: 'host51.registrar-servers.com',
+  //   port: 465,
+  //   secure: true,
+  //   auth: {
+  //     user: 'mailer@realmofglory.org',
+  //     pass: 'realmHQ01'
+  //   },
+  //   tls: {
+  //     rejectUnauthorized: false
+  //   }
+  // };
 
-  transporter.sendMail(mainOptions, callback);
+  // const transporter = nodemailer.createTransport(smtpConfig);
+  // const mainOptions = {
+  //   from: 'mailer@realmofglory.org',
+  //   to: 'me@sprypixels.com',
+  //   subject: 'Hello from Server',
+  //   text: 'hello world!',
+  //   html: '<b>Hello World!</b>',
+  // };
+  // const callback = function (err, info) {
+  //   if (err) { throw err }
+  //   console.log('sent');
+  // }
+
+  // transporter.sendMail(mainOptions, callback);
 });
 
 
