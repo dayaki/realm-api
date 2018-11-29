@@ -377,7 +377,7 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     pattern: "###-####-##",
   });
 
-  let type = '', expiry = '', length = 0;
+  let type = '', expiry = '';
   if (req.params.type === 1) {
     expiry = moment().add(1, 'months').toISOString();
     type = '1 Month';
@@ -395,8 +395,8 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   vouchers.forEach(voucher => {
     let vouc = new Voucher({
       code: voucher,
-      expiry,
-      type
+      expiry: expiry,
+      type: type
     });
     
     vouc.save((err, vou) => {
