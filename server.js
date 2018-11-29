@@ -369,6 +369,13 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   // let nextMonth = moment().add(1, 'months');
   // let expired = today.isSameOrBefore(nextMonth);
   // res.json({ today, nextMonth, expired })
+  const vouchers = genVoucher.generate({
+    prefix: "ROG-",
+    length: 9,
+    count: 5,
+    charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    pattern: "###-####-##",
+  });
 
   if (req.params.type === 1) {
     let expiry = moment().add(1, 'months').toISOString();
@@ -389,47 +396,20 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   }
 
   function saveVouchers(expiry, type) {
-    const vouchers = genVoucher.generate({
-      prefix: "ROG-",
-      length: 9,
-      count: 5,
-      charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-      pattern: "###-####-##",
-    });
-
     vouchers.forEach(voucher => {
-      console.log(voucher)
-      // let vouc = new Voucher({
-      //   code: voucher,
-      //   expiry,
-      //   type
-      // });
+      let vouc = new Voucher({
+        code: voucher,
+        expiry,
+        type
+      });
       
-      // vouc.save((err, vou) => {
-      //   if (err) res.json({ status: 'error' })
-      // });
+      vouc.save((err, vou) => {
+        if (err) res.json({ status: 'error' })
+      });
     });
 
     res.json({ status: 'success' });
   }
-
-  // res.json({ status: 'success' });
-
-  // while (length < 10 ) {
-  //   let string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-  //   let voucher = new Voucher({
-  //     code: string.toUpperCase(),
-  //     expiry,
-  //     type
-  //   });
-
-  //   voucher.save((err, vou) => {
-  //     if (err) res.json({ status: 'error' })
-  //   });
-
-  //   length = length + 1;
-  // }
-  // res.json({ status: 'success' });
 });
 
 // Fetch all attendance
