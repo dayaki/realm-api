@@ -396,17 +396,18 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
       charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
       pattern: "###-####-##",
     });
-    
+
     vouchers.forEach(voucher => {
-      let vouc = new Voucher({
-        code: voucher,
-        expiry,
-        type
-      });
+      console.log(voucher)
+      // let vouc = new Voucher({
+      //   code: voucher,
+      //   expiry,
+      //   type
+      // });
       
-      vouc.save((err, vou) => {
-        if (err) res.json({ status: 'error' })
-      });
+      // vouc.save((err, vou) => {
+      //   if (err) res.json({ status: 'error' })
+      // });
     });
 
     res.json({ status: 'success' });
