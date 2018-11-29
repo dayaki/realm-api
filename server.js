@@ -393,13 +393,13 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   }
 
   vouchers.forEach(voucher => {
-    let voucher = new Voucher({
+    let vouc = new Voucher({
       code: voucher,
       expiry,
       type
     });
     
-    voucher.save((err, vou) => {
+    vouc.save((err, vou) => {
       if (err) res.json({ status: 'error' })
     });
 
