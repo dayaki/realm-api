@@ -255,27 +255,28 @@ router.post('/support', (req, res) => {
 
   server.send({
     text:    req.body.message,
-    from:    'Realm Mailer <mailer@realmofglory.org',
+    from:    'Realm Mailer <mailer@realmofglory.org>',
     to:      "Web Team <me@sprypixels.com>",
-    // to:      "Web Team <webteam@realmofglory.org>",
+    // bcc:     "<olasland@gmail.com>, <akindotun@gmail.com>, <hello@madebydayo.co>",
     subject: "Support Message from App",
     attachment: [{
       data: `<html>
               <div>
                 <h3>Support request from the app</h3>
+                <p>We have someone needing support with the Realm of Glory mobile app, see details below:</p>
                 <p>
                   Name: ${req.body.name} <br/>
                   Email: ${req.body.email} <br/>
+                  Phone: ${req.body.phone} <br/>
                 </p>
                   <hr/>
-                  <p>
+                  <p style="padding:5px 0px;">
                     "${req.body.message}"
                   </p>
                   <hr/>
               </div>
             </html>`,
       alternative: true,
-      // inline: true,
     }],
   }, function(err, message) { 
    if (err) res.json({ status: 'Error', msg: err})
