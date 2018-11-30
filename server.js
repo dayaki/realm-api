@@ -274,7 +274,7 @@ router.post('/support', (req, res) => {
                   <hr/>
               </div>
             </html>`,
-      // alternative: true,
+      alternative: true,
       inline: true,
     }],
   }, function(err, message) { 
