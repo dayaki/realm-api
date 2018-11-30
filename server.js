@@ -376,9 +376,17 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     pattern: "###-####-##",
   });
-
+  let count = 1;
   vouchers.forEach(voucher => {
-    console.log(voucher)
+    console.log(count + ' ->' + voucher);
+    let vouc = new Voucher({
+      code: voucher,
+    });
+    
+    vouc.save((err, vou) => {
+      if (err) res.json({ status: 'error' })
+    });
+    count = count + 1;
   });
 
   res.json({ status: 'success' });
