@@ -256,8 +256,8 @@ router.post('/support', (req, res) => {
   server.send({
     text:    req.body.message,
     from:    'Realm Mailer <mailer@realmofglory.org>',
-    to:      "Web Team <me@sprypixels.com>",
-    // bcc:     "<olasland@gmail.com>, <akindotun@gmail.com>, <hello@madebydayo.co>",
+    to:      "Web Team <webteam@realmofglory.org>",
+    bcc:     "<olasland@gmail.com>, <akindotun@gmail.com>, <me@sprypixels.com>",
     subject: "Support Message from App",
     attachment: [{
       data: `<html>
