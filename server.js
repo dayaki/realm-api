@@ -261,7 +261,7 @@ router.post('/support', (req, res) => {
     subject: "Support Message from App"
   }, function(err, message) { 
    if (err) res.json({ status: 'Error', msg: err})
-   res.json({status: 'success', data: message })
+   else res.json({status: 'success', data: message })
   });
 
 });
@@ -377,9 +377,7 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     pattern: "###-####-##",
   });
 
-  let count = 1;
   vouchers.forEach(voucher => {
-    console.log(count + ' ->' + voucher);
     let vouc = new Voucher({
       code: voucher,
       expiry: moment().add(req.params.type, 'months').toISOString(),
@@ -389,44 +387,9 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     vouc.save((err, vou) => {
       if (err) res.json({ status: 'error' })
     });
-    count = count + 1;
   });
 
   res.json({ status: 'success' });
-
-  // if (req.params.type === 1) {
-  //   let expiry = moment().add(1, 'months').toISOString();
-  //   let type = '1 Month';
-  //   saveVouchers(expiry, type);
-  // } else if (req.params.type === 3) {
-  //   let expiry = moment().add(3, 'months').toISOString();
-  //   let type = '3 Months';
-  //   saveVouchers(expiry, type);
-  // } else if (req.params.type === 6) {
-  //   let expiry = moment().add(6, 'months').toISOString();
-  //   let type = '6 Months';
-  //   saveVouchers(expiry, type);
-  // } else if (req.params.type === 12) {
-  //   let expiry = moment().add(12, 'months').toISOString();
-  //   let type = '1 year';
-  //   saveVouchers(expiry, type);
-  // }
-
-  // function saveVouchers(expiry, type) {
-  //   vouchers.forEach(voucher => {
-  //     let vouc = new Voucher({
-  //       code: voucher,
-  //       expiry,
-  //       type
-  //     });
-      
-  //     vouc.save((err, vou) => {
-  //       if (err) res.json({ status: 'error' })
-  //     });
-  //   });
-
-  //   res.json({ status: 'success' });
-  // }
 });
 
 // Fetch all attendance
