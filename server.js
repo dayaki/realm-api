@@ -376,11 +376,14 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
     charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     pattern: "###-####-##",
   });
+
   let count = 1;
   vouchers.forEach(voucher => {
     console.log(count + ' ->' + voucher);
     let vouc = new Voucher({
       code: voucher,
+      expiry: moment().add(req.params.type, 'months').toISOString(),
+      type: `${req.params.type} Month`,
     });
     
     vouc.save((err, vou) => {
