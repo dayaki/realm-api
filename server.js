@@ -259,7 +259,7 @@ router.post('/support', (req, res) => {
     to:      "Web Team <me@sprypixels.com>",
     // to:      "Web Team <webteam@realmofglory.org>",
     subject: "Support Message from App",
-    attachement: [{
+    attachment: [{
       data: `<html>
               <div>
                 <h3>Support request from the app</h3>
@@ -275,7 +275,7 @@ router.post('/support', (req, res) => {
               </div>
             </html>`,
       alternative: true,
-      inline: true,
+      // inline: true,
     }],
   }, function(err, message) { 
    if (err) res.json({ status: 'Error', msg: err})
