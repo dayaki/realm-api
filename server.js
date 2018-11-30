@@ -372,44 +372,50 @@ router.get('/admin/vouchers/new/:type', (req, res) => {
   const vouchers = genVoucher.generate({
     prefix: "ROG-",
     length: 9,
-    count: 5,
+    count: 200,
     charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     pattern: "###-####-##",
   });
 
-  if (req.params.type === 1) {
-    let expiry = moment().add(1, 'months').toISOString();
-    let type = '1 Month';
-    saveVouchers(expiry, type);
-  } else if (req.params.type === 3) {
-    let expiry = moment().add(3, 'months').toISOString();
-    let type = '3 Months';
-    saveVouchers(expiry, type);
-  } else if (req.params.type === 6) {
-    let expiry = moment().add(6, 'months').toISOString();
-    let type = '6 Months';
-    saveVouchers(expiry, type);
-  } else if (req.params.type === 12) {
-    let expiry = moment().add(12, 'months').toISOString();
-    let type = '1 year';
-    saveVouchers(expiry, type);
-  }
+  vouchers.forEach(voucher => {
+    console.log(voucher)
+  });
 
-  function saveVouchers(expiry, type) {
-    vouchers.forEach(voucher => {
-      let vouc = new Voucher({
-        code: voucher,
-        expiry,
-        type
-      });
+  res.json({ status: 'success' });
+
+  // if (req.params.type === 1) {
+  //   let expiry = moment().add(1, 'months').toISOString();
+  //   let type = '1 Month';
+  //   saveVouchers(expiry, type);
+  // } else if (req.params.type === 3) {
+  //   let expiry = moment().add(3, 'months').toISOString();
+  //   let type = '3 Months';
+  //   saveVouchers(expiry, type);
+  // } else if (req.params.type === 6) {
+  //   let expiry = moment().add(6, 'months').toISOString();
+  //   let type = '6 Months';
+  //   saveVouchers(expiry, type);
+  // } else if (req.params.type === 12) {
+  //   let expiry = moment().add(12, 'months').toISOString();
+  //   let type = '1 year';
+  //   saveVouchers(expiry, type);
+  // }
+
+  // function saveVouchers(expiry, type) {
+  //   vouchers.forEach(voucher => {
+  //     let vouc = new Voucher({
+  //       code: voucher,
+  //       expiry,
+  //       type
+  //     });
       
-      vouc.save((err, vou) => {
-        if (err) res.json({ status: 'error' })
-      });
-    });
+  //     vouc.save((err, vou) => {
+  //       if (err) res.json({ status: 'error' })
+  //     });
+  //   });
 
-    res.json({ status: 'success' });
-  }
+  //   res.json({ status: 'success' });
+  // }
 });
 
 // Fetch all attendance
