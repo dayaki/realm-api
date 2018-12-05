@@ -229,9 +229,43 @@ router.post('/voucher/verify', (req, res) => {
     if (err) res.json({ status: 'error', data: err })
     
     if (voucher === null) {
-      res.json({ status: 'invalid', msg: 'Invalid Voucher code' })
+      res.json({ status: 'invalid' })
     } else {
-      res.json({ status: 'success', data: vouchers })
+      if (voucher.isExpired) {
+        res.json({ status: 'expired' })
+      }
+      if (voucher.timesUsed > 10) {
+        res.json({ status: 'usedup' })
+      }
+      // if new voucher
+      if (!voucher.used) {
+        const expiry = moment().add(voucher.type.charAt(0), 'months');
+        User.findByIdAndUpdate(user, { $set: 
+          { sub_active: true, sub_end: expiry }
+        }, (err, user) => {});
+
+        Voucher.findByIdAndUpdate(voucher._id, { $set: 
+          { used: true, timesUsed: +1, expiry }
+          }, (err, vou) => { res.json({ status: 'success', data: vou });
+        });
+      }
+      // Already used voucher
+      if (voucher.used) {
+        // Check if voucher has expired
+        let today = moment();
+        let nextMonth = moment().add(voucher.type.charAt(0), 'months');
+        if (today.isBefore(nextMonth)) {
+          Voucher.findByIdAndUpdate(voucher._id, { $set: 
+          { isExpired: true, used: true  }}, (err, vou) => {});
+
+          User.findByIdAndUpdate(user, {$set: {sub_active:false}}, (err, user) => {
+            res.json({ status: 'expired 2', user: user })
+          });
+        } else {
+          res.json({ status: 'success', data: voucher })
+        }
+      }
+
     }
   });
 });
