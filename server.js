@@ -293,9 +293,9 @@ router.post('/voucher/verify', (req, res) => {
         // let nextMonth = moment().add(voucher.type.charAt(0), 'months');
         console.log('--------------');
         console.log('today', today);
-        console.log('expiry', vouchExpiry)
-        if (vouchExpiry.isBefore(today)) {
-          console.log('expired - ', today.isBefore(vouchExpiry))
+        console.log('expiry', moment(vouchExpiry))
+        if (moment(vouchExpiry).isBefore(today)) {
+          console.log('expired - ', moment(vouchExpiry).isBefore(today))
           console.log('------EXPIRED ----------');
           // Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
           // { isExpired: true, used: true  }}, (err, vou) => {});
