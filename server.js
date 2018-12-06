@@ -236,10 +236,10 @@ router.post('/voucher/paymemt', (req, res) => {
   });
 
   if (req.body.user !== null || req.body.user !== undefined) {
-    User.findByIdAndUpdate(user, { $set: 
+    User.findByIdAndUpdate(req.body.user, { $set: 
       { sub_active: true, sub_end: moment().add(req.body.type, 'months').toISOString() }
     }, (err, user) => {
-      if (err) res.json({ status: 'error' })
+      if (err) res.json({ status: 'error', data: user })
     });
   }
 
