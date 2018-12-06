@@ -239,11 +239,13 @@ router.post('/voucher/paymemt', (req, res) => {
     User.findByIdAndUpdate(req.body.user, { $set: 
       { sub_active: true, sub_end: moment().add(req.body.type, 'months').toISOString() }
     }, (err, user) => {
-      if (err) res.json({ status: 'error', data: user })
+      if (err) res.json({ status: 'error' })
+      res.json({ status: 'success', data: user })
     });
+  } else {
+    res.json({ status: 'success' })
   }
 
-  res.json({ status: 'success' })
 });
 
 // Validate Voucher
