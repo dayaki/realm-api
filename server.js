@@ -223,6 +223,29 @@ router.post('/giving', (req, res) => {
 
 });
 
+// Voucher paid for
+router.post('/voucher/paymemt', (req, res) => {
+  let vouc = new Voucher({
+    code: req.body.voucher,
+    expiry: moment().add(req.body.type, 'months').toISOString(),
+    type: `${req.body.type} Month`,
+  });
+  
+  vouc.save((err, vou) => {
+    if (err) res.json({ status: 'error' })
+  });
+
+  if (req.body.user !== null || req.body.user !== undefined) {
+    User.findByIdAndUpdate(user, { $set: 
+      { sub_active: true, sub_end: moment().add(req.body.type, 'months').toISOString() }
+    }, (err, user) => {
+      if (err) res.json({ status: 'error' })
+    });
+  }
+
+  res.json({ status: 'success' })
+});
+
 // Validate Voucher
 router.post('/voucher/verify', (req, res) => {
   Voucher.findOne({ code: req.body.voucher }, (err, voucher) => {
