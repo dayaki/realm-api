@@ -303,7 +303,7 @@ router.post('/voucher/verify', (req, res) => {
         //   res.json({ status: 'success', data: voucher })
         // }
 
-        // res.json({ status: 'success', data: voucher })
+        res.json({ status: 'success', data: voucher })
       }
 
     }
