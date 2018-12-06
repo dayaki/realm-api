@@ -248,6 +248,16 @@ router.post('/voucher/paymemt', (req, res) => {
 
 });
 
+// Update Voucher usage
+router.post('/voucher/usage', (req, res) => {
+  Voucher.findOneAndUpdate({_id: req.body.voucher}, 
+    { $set: { used: true, timesUsed: +1 } }, 
+    { new: true }, (err, vouc) => {
+    if (err) res.json({status: 'error', msg: err})
+    res.json({ status: 'success', data: vouc})
+  })
+});
+
 // Validate Voucher
 router.post('/voucher/verify', (req, res) => {
   Voucher.findOne({ code: req.body.voucher }, (err, voucher) => {
@@ -270,7 +280,6 @@ router.post('/voucher/verify', (req, res) => {
         //     { sub_active: true, sub_end: expiry }
         //   }, (err, user) => {});
         // }
-        console.log('------ voucher -----', voucher._id)
         Voucher.findOneAndUpdate({_id: voucher._id}, {$set:{expiry}}, { new: true }, (err, info) => {
           if (err) res.json({ status: 'error' });
           res.json({ status: 'voucher', data: info });
@@ -282,13 +291,12 @@ router.post('/voucher/verify', (req, res) => {
         let today = moment();
         let nextMonth = moment().add(voucher.type.charAt(0), 'months');
         if (today.isBefore(nextMonth)) {
-          Voucher.findOneAndUpdate({id: voucher._id}, { $set: 
+          Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
           { isExpired: true, used: true  }}, (err, vou) => {});
 
           if (req.body.user !== null) {
-            User.findOneAndUpdate({id: req.body.user}, {$set: {sub_active: false}
-            }, (err, user) => {
-              res.json({ status: 'expired 2', user: user })
+            User.findOneAndUpdate({_id: req.body.user}, {$set: {sub_active: false}}, { new: true }, (err, expiredUser) => {
+              res.json({ status: 'expired 2', user: expiredUser })
             });
           }
         } else {
