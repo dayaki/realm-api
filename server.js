@@ -270,9 +270,9 @@ router.post('/voucher/verify', (req, res) => {
         //     { sub_active: true, sub_end: expiry }
         //   }, (err, user) => {});
         // }
-
-        Voucher.findOneAndUpdate({id: voucher._id}, { $set: { expiry }
-          }, (err, vou) => { res.json({ status: 'success voucher', data: vou });
+        Voucher.findOneAndUpdate({id: voucher._id}, {$set:{expiry}}, { new: true }, (err, vou) => {
+          if (err) res.json({ status: 'error' });
+          res.json({ status: 'voucher', data: vou });
         });
       }
       // Already used voucher
