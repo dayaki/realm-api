@@ -137,6 +137,14 @@ router.route('/users')
   });
 })
 
+// Update user expiry
+router.post('/user/expired', (req, res) => {
+  User.findOneAndUpdate({_id: req.body.user}, {$set:{sub_active: false}}, {new: true}, (err, user) => {
+    if (err) res.json({ status: 'error', msg: err})
+    res.json({ status: 'success', data: user})
+  });
+});
+
 // Get all Sermons
 router.get('/sermons', (req, res) => {
   const then = new Date('2018-01-01').toISOString();
@@ -255,6 +263,14 @@ router.post('/voucher/usage', (req, res) => {
     if (err) res.json({status: 'error', msg: err})
     res.json({ status: 'success', data: vouc })
   })
+});
+
+// Update voucher expiry
+router.post('/voucher/expired', (req, res) => {
+  Voucher.findOneAndUpdate({_id: req.body.voucher}, {$set:{isExpired: true}}, {new: true}, (err, userVouch) => {
+    if (err) res.json({ status: 'error', msg: err})
+    res.json({ status: 'success', data: userVouch })
+  });
 });
 
 // Validate Voucher
