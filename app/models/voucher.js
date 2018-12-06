@@ -4,7 +4,7 @@ let moment   = require('moment');
  
 var VouchersSchema = new Schema({
   code: String,
-  expiry: String,
+  expiry: Date,
   isExpired: {
     type: Boolean,
     default: false

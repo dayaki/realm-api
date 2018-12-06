@@ -231,21 +231,22 @@ router.post('/voucher/paymemt', (req, res) => {
     type: `${req.body.type} Month`,
   });
   
-  vouc.save((err, vou) => {
+  vouc.save((err, vouOne) => {
     if (err) res.json({ status: 'error' })
-  });
-  console.log('----user------', req.body.user)
-  if (req.body.user !== null || req.body.user !== undefined) {
-    User.findOneAndUpdate({id: req.body.user}, { $set: 
-      { sub_active: true, sub_end: moment().add(req.body.type, 'months') }
-    }, (err, user) => {
-      if (err) res.json({ status: 'error' })
-      res.json({ status: 'success', data: user })
-    });
-  } else {
-    res.json({ status: 'success' })
-  }
 
+    console.log('----user------', req.body.user)
+    if (req.body.user !== null) {
+      User.findOneAndUpdate({_id: req.body.user}, { $set: 
+        { sub_active: true, sub_end: moment().add(req.body.type, 'months') }
+      }, { new: true }, (err, user) => {
+        if (err) res.json({ status: 'error' })
+        res.json({ status: 'user', data: user })
+      });
+    } else {
+      res.json({ status: 'success', data: vouOne })
+    }
+
+  });
 });
 
 // Update Voucher usage
