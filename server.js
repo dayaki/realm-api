@@ -227,7 +227,7 @@ router.post('/giving', (req, res) => {
 router.post('/voucher/paymemt', (req, res) => {
   let vouc = new Voucher({
     code: req.body.voucher,
-    expiry: moment().add(req.body.type, 'months').toISOString(),
+    expiry: moment().add(req.body.type, 'months'),
     type: `${req.body.type} Month`,
   });
   
@@ -237,7 +237,7 @@ router.post('/voucher/paymemt', (req, res) => {
   console.log('----user------', req.body.user)
   if (req.body.user !== null || req.body.user !== undefined) {
     User.findOneAndUpdate({id: req.body.user}, { $set: 
-      { sub_active: true, sub_end: moment().add(req.body.type, 'months').toISOString() }
+      { sub_active: true, sub_end: moment().add(req.body.type, 'months') }
     }, (err, user) => {
       if (err) res.json({ status: 'error' })
       res.json({ status: 'success', data: user })
@@ -289,7 +289,7 @@ router.post('/voucher/verify', (req, res) => {
       if (voucher.used) {
         // Check if voucher has expired
         let today = moment();
-        const vouchExpiry = moment(voucher.expiry).toDate();
+        const vouchExpiry = moment(voucher.expiry);
         // let nextMonth = moment().add(voucher.type.charAt(0), 'months');
         console.log('--------------');
         console.log('today', today);
