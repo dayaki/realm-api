@@ -290,18 +290,20 @@ router.post('/voucher/verify', (req, res) => {
         // Check if voucher has expired
         let today = moment();
         let nextMonth = moment().add(voucher.type.charAt(0), 'months');
-        if (today.isBefore(nextMonth)) {
-          Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
-          { isExpired: true, used: true  }}, (err, vou) => {});
+        // if (today.isBefore(nextMonth)) {
+        //   Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
+        //   { isExpired: true, used: true  }}, (err, vou) => {});
 
-          if (req.body.user !== null) {
-            User.findOneAndUpdate({_id: req.body.user}, {$set: {sub_active: false}}, { new: true }, (err, expiredUser) => {
-              res.json({ status: 'expired 2', user: expiredUser })
-            });
-          }
-        } else {
-          res.json({ status: 'success', data: voucher })
-        }
+        //   if (req.body.user !== null) {
+        //     User.findOneAndUpdate({_id: req.body.user}, {$set: {sub_active: false}}, { new: true }, (err, expiredUser) => {
+        //       res.json({ status: 'expired 2', user: expiredUser })
+        //     });
+        //   }
+        // } else {
+        //   res.json({ status: 'success', data: voucher })
+        // }
+
+        // res.json({ status: 'success', data: voucher })
       }
 
     }
