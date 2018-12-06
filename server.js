@@ -289,13 +289,13 @@ router.post('/voucher/verify', (req, res) => {
       if (voucher.used) {
         // Check if voucher has expired
         let today = moment();
-        const vouchExpiry = voucher.expiry;
+        const vouchExpiry = moment(voucher.expiry).toDate();
         // let nextMonth = moment().add(voucher.type.charAt(0), 'months');
         console.log('--------------');
         console.log('today', today);
-        console.log('expiry', moment(vouchExpiry))
-        if (moment(vouchExpiry).isBefore(today)) {
-          console.log('expired - ', moment(vouchExpiry).isBefore(today))
+        console.log('expiry', vouchExpiry)
+        if (vouchExpiry.isBefore(today)) {
+          console.log('expired - ', vouchExpiry.isBefore(today))
           console.log('------EXPIRED ----------');
           // Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
           // { isExpired: true, used: true  }}, (err, vou) => {});
