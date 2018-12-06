@@ -289,21 +289,28 @@ router.post('/voucher/verify', (req, res) => {
       if (voucher.used) {
         // Check if voucher has expired
         let today = moment();
-        let nextMonth = moment().add(voucher.type.charAt(0), 'months');
-        // if (today.isBefore(nextMonth)) {
-        //   Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
-        //   { isExpired: true, used: true  }}, (err, vou) => {});
+        const vouchExpiry = voucher.expiry;
+        // let nextMonth = moment().add(voucher.type.charAt(0), 'months');
+        console.log('--------------');
+        console.log('today', today);
+        console.log('expiry', vouchExpiry)
+        if (vouchExpiry.isBefore(today)) {
+          console.log('expired - ', today.isBefore(vouchExpiry))
+          console.log('------EXPIRED ----------');
+          // Voucher.findOneAndUpdate({_id: voucher._id}, { $set: 
+          // { isExpired: true, used: true  }}, (err, vou) => {});
 
-        //   if (req.body.user !== null) {
-        //     User.findOneAndUpdate({_id: req.body.user}, {$set: {sub_active: false}}, { new: true }, (err, expiredUser) => {
-        //       res.json({ status: 'expired 2', user: expiredUser })
-        //     });
-        //   }
-        // } else {
-        //   res.json({ status: 'success', data: voucher })
-        // }
+          // if (req.body.user !== null) {
+          //   User.findOneAndUpdate({_id: req.body.user}, {$set: {sub_active: false}}, { new: true }, (err, expiredUser) => {
+          //     res.json({ status: 'expired 2', user: expiredUser })
+          //   });
+          // }
+          res.json({ status: 'testing'})
+        } else {
+          res.json({ status: 'success', data: voucher })
+        }
 
-        res.json({ status: 'success', data: voucher })
+        // res.json({ status: 'success', data: voucher })
       }
 
     }
