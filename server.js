@@ -234,9 +234,9 @@ router.post('/voucher/paymemt', (req, res) => {
   vouc.save((err, vou) => {
     if (err) res.json({ status: 'error' })
   });
-
+  console.log('----user------', req.body.user)
   if (req.body.user !== null || req.body.user !== undefined) {
-    User.findByIdAndUpdate(req.body.user, { $set: 
+    User.findOneAndUpdate({id: req.body.user}, { $set: 
       { sub_active: true, sub_end: moment().add(req.body.type, 'months').toISOString() }
     }, (err, user) => {
       if (err) res.json({ status: 'error' })
@@ -265,11 +265,13 @@ router.post('/voucher/verify', (req, res) => {
       // if new voucher
       if (!voucher.used) {
         const expiry = moment().add(voucher.type.charAt(0), 'months');
-        User.findByIdAndUpdate(user, { $set: 
-          { sub_active: true, sub_end: expiry }
-        }, (err, user) => {});
+        if (req.body.user !== null) {
+          User.findOneAndUpdate({id: req.body.user}, { $set: 
+            { sub_active: true, sub_end: expiry }
+          }, (err, user) => {});
+        }
 
-        Voucher.findByIdAndUpdate(voucher._id, { $set: 
+        Voucher.findOneAndUpdate({id: voucher._id}, { $set: 
           { used: true, timesUsed: +1, expiry }
           }, (err, vou) => { res.json({ status: 'success', data: vou });
         });
@@ -280,12 +282,15 @@ router.post('/voucher/verify', (req, res) => {
         let today = moment();
         let nextMonth = moment().add(voucher.type.charAt(0), 'months');
         if (today.isBefore(nextMonth)) {
-          Voucher.findByIdAndUpdate(voucher._id, { $set: 
+          Voucher.findOneAndUpdate({id: voucher._id}, { $set: 
           { isExpired: true, used: true  }}, (err, vou) => {});
 
-          User.findByIdAndUpdate(user, {$set: {sub_active:false}}, (err, user) => {
-            res.json({ status: 'expired 2', user: user })
-          });
+          if (req.body.user !== null) {
+            User.findOneAndUpdate({id: req.body.user}, {$set: {sub_active: false}
+            }, (err, user) => {
+              res.json({ status: 'expired 2', user: user })
+            });
+          }
         } else {
           res.json({ status: 'success', data: voucher })
         }
