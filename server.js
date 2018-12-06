@@ -265,15 +265,14 @@ router.post('/voucher/verify', (req, res) => {
       // if new voucher
       if (!voucher.used) {
         const expiry = moment().add(voucher.type.charAt(0), 'months');
-        if (req.body.user !== null) {
-          User.findOneAndUpdate({id: req.body.user}, { $set: 
-            { sub_active: true, sub_end: expiry }
-          }, (err, user) => {});
-        }
+        // if (req.body.user !== null) {
+        //   User.findOneAndUpdate({id: req.body.user}, { $set: 
+        //     { sub_active: true, sub_end: expiry }
+        //   }, (err, user) => {});
+        // }
 
-        Voucher.findOneAndUpdate({id: voucher._id}, { $set: 
-          { used: true, timesUsed: +1, expiry }
-          }, (err, vou) => { res.json({ status: 'success', data: vou });
+        Voucher.findOneAndUpdate({id: voucher._id}, { $set: { expiry }
+          }, (err, vou) => { res.json({ status: 'success voucher', data: vou });
         });
       }
       // Already used voucher
