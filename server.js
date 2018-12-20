@@ -471,6 +471,8 @@ router.post('/admin/events', (req, res) => {
     if(err) res.json({ status: 'error', msg: err })
     else res.json({ status: 'success', data: event })
   });
+
+  //send push notification of the new event
 });
 
 // Vouchers

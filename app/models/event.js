@@ -6,8 +6,8 @@ var EventsSchema = new Schema({
   image: String,
   desc: String,
   address: String,
-  startDate: String,
-  endDate: String,
+  startDate: Date,
+  endDate: Date,
   time: String,
   created_at: {
     type: Date,
