@@ -1,24 +1,24 @@
-let express     = require('express');
-let bodyParser  = require('body-parser');
-let mongoose    = require('mongoose');
-let bcrypt      = require('bcrypt-nodejs');
-var genVoucher  = require('voucher-code-generator');
-let cors        = require('cors');
-let slug        = require('slug');
-let config      = require('./config');
-let moment      = require('moment');
-let OneSignal   = require('onesignal-node');
-let Email 	    = require("emailjs");
+const express     = require('express');
+const bodyParser  = require('body-parser');
+const mongoose    = require('mongoose');
+const bcrypt      = require('bcrypt-nodejs');
+const genVoucher  = require('voucher-code-generator');
+const cors        = require('cors');
+const slug        = require('slug');
+const config      = require('./config');
+const moment      = require('moment');
+const OneSignal   = require('onesignal-node');
+const Email 	    = require("emailjs");
 
 // Models
-let User      = require('./app/models/user');
-import Admin from './app/models/admin';
-let Sermon    = require('./app/models/sermon');
-let Note      = require('./app/models/note');
-let Give      = require('./app/models/give');
-let Events    = require('./app/models/event');
-let Voucher   = require('./app/models/voucher');
-let Attendance = require('./app/models/attendance');
+const User      = require('./app/models/user');
+const Admin     = require("./app/models/admin");
+const Sermon    = require('./app/models/sermon');
+const Note      = require('./app/models/note');
+const Give      = require('./app/models/give');
+const Events    = require('./app/models/event');
+const Voucher   = require('./app/models/voucher');
+const Attendance = require('./app/models/attendance');
 
 // Variables
 let app = express();
