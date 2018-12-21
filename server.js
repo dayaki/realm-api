@@ -549,8 +549,8 @@ router.get('/admin/users', (req, res) => {
 });
 
 // Delete admin
-router.getr('/admin/user/delete', (req, res) => {
-  Admin.findOneAndDelete({_id: user}, (err, admin) => {
+router.post('/admin/user/delete', (req, res) => {
+  Admin.findOneAndDelete({_id: req.body.user}, (err, admin) => {
     if (err) res.json({ status: 'error', msg: err })
     res.json({ status: 'success', data: admin })
   })
