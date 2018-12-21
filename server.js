@@ -447,7 +447,7 @@ router.post('/admin/sermons', (req, res) => {
 });
 
 // Fetch online givers
-router.get('/giving', (req, res) => {
+router.get('/admin/giving', (req, res) => {
   Give.find({}, (err, give) => {
     if(err) res.json({ status: 'error', msg: err });
 
@@ -474,6 +474,15 @@ router.post('/admin/events', (req, res) => {
 
   //send push notification of the new event
 });
+
+// Delete Event
+router.post('/admin/event/delete', (req, res) => {
+  Events.findOneAndDelete({_id: req.body.event}, (err, event) => {
+    if (err) res.json({ status: 'error', msg: err});
+    res.json({ status: 'success', data: event })
+  });
+})
+
 
 // Vouchers
 router.get('/admin/vouchers', (req, res) => {
