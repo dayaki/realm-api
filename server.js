@@ -541,7 +541,7 @@ router.post('/admin/attendance', (req, res) => {
 });
 
 // fetch admins
-router.getr('/admin/users', (req, res) => {
+router.get('/admin/users', (req, res) => {
   Admin.find({}, (err, admins) => {
     if (err) res.json({ status: 'error', msg: err })
     res.json({ status: 'success', data: admins })
