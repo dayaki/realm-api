@@ -12,6 +12,7 @@ let Email 	    = require("emailjs");
 
 // Models
 let User      = require('./app/models/user');
+import Admin from './app/models/admin';
 let Sermon    = require('./app/models/sermon');
 let Note      = require('./app/models/note');
 let Give      = require('./app/models/give');
@@ -390,10 +391,7 @@ router.post('/support', (req, res) => {
 
 // Admin Auth
 router.post('/admin/auth', (req, res) => {
-  User.findOne({
-    email: req.body.username,
-    isAdmin: true
-  }, (err, user) => {
+  Admin.findOne({email: req.body.username,}, (err, user) => {
     if (err) res.json({ status: 'error', msg: err });
 
     if (user === null) {
@@ -405,22 +403,19 @@ router.post('/admin/auth', (req, res) => {
         res.json({ status: 'success', data: user });
       }
     }
-
   });
 });
 
-router.post('/admin/new', (req, res) => {
-  let user = new User({
+router.post('/admin/user/new', (req, res) => {
+  let user = new Admin({
     name: req.body.name,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password),
-    isAdmin: true,
-    adminRole: req.body.role
+    role: req.body.role
   });
 
   user.save((err, user) => {
-    if(err) res.json({ status: 'error', data: err });
-
+    if (err) res.json({ status: 'error', data: err });
     res.json({ status: 'success', data: user });
   });
 });
@@ -450,7 +445,6 @@ router.post('/admin/sermons', (req, res) => {
 router.get('/admin/giving', (req, res) => {
   Give.find({}, (err, give) => {
     if(err) res.json({ status: 'error', msg: err });
-
     res.json({ status: 'success', data: give });
   });
 });
@@ -544,7 +538,23 @@ router.post('/admin/attendance', (req, res) => {
     if (err) res.json({ status: 'error', msg: err })
     res.json({ status: 'success', data: attn })
   });
-})
+});
+
+// fetch admins
+router.getr('/admin/users', (req, res) => {
+  Admin.find({}, (err, admins) => {
+    if (err) res.json({ status: 'error', msg: err })
+    res.json({ status: 'success', data: admins })
+  })
+});
+
+// Delete admin
+router.getr('/admin/user/delete', (req, res) => {
+  Admin.findOneAndDelete({_id: user}, (err, admin) => {
+    if (err) res.json({ status: 'error', msg: err })
+    res.json({ status: 'success', data: admin })
+  })
+});
 
 
 // listen (start app with node server.js) =====================

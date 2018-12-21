@@ -20,12 +20,7 @@ var UserSchema = new Schema({
     type: Boolean,
     default: false
   },
-  sub_end: Date,
-  isAdmin: {
-    type: Boolean,
-    default: false
-  },
-  adminRole: String
+  sub_end: Date
 });
 
 module.exports = mongoose.model('User', UserSchema);
