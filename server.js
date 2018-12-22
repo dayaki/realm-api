@@ -9,10 +9,12 @@ const config      = require('./config');
 const moment      = require('moment');
 const OneSignal   = require('onesignal-node');
 const Email 	    = require("emailjs");
+const randomColor = require('randomcolor');
 
 // Models
 const User      = require('./app/models/user');
 const Admin     = require("./app/models/admin");
+const Article   = require('./app/models/article');
 const Sermon    = require('./app/models/sermon');
 const Note      = require('./app/models/note');
 const Give      = require('./app/models/give');
@@ -152,6 +154,14 @@ router.get('/sermons', (req, res) => {
   Sermon.find().where('isodate').gte(then).sort({isodate: -1}).exec((err, sermons) => {
     if (err) res.json({ status: 'error', msg: err });
     res.json({ status: 'success', data: sermons });
+  });
+});
+
+// Fetch articles
+router.get('/articles', (req, res) => {
+  Article.find({}, (err, articles) => {
+    if (err) res.json({ status: 'error', msg: err });
+    res.json({ status: 'success', data: articles });
   });
 });
 
@@ -420,6 +430,31 @@ router.post('/admin/user/new', (req, res) => {
   });
 });
 
+router.post('/admin/user/password', (req, res) => {
+  const password = bcrypt.hashSync(req.body.password)
+  Admin.findOneAndUpdate({_id: req.body.user}, { $set: { password } }, { new: true }, (err, user) => {
+    if (err) res.json({ status: 'error', msg: err })
+    res.json({ status: 'success', data: user})
+  });
+});
+
+// Post Article
+router.post('/admin/article', (req, res) => {
+  const article = new Article({
+    title: req.body.title,
+    slug: slug(req.body.title, {lower: true}),
+    image: req.body.image || '',
+    author: req.body.author,
+    color: randomColor({format: 'rgba',alpha: 0.8, count: 1 })
+  });
+
+  article.save((err, article) => {
+    if (err) res.json({ status: 'error', msg: err });
+    res.json({ status: 'success', data: article });
+  });
+
+});
+
 // Post Sermons
 router.post('/admin/sermons', (req, res) => {
   let sermon = new Sermon({
@@ -465,8 +500,6 @@ router.post('/admin/events', (req, res) => {
     if(err) res.json({ status: 'error', msg: err })
     else res.json({ status: 'success', data: event })
   });
-
-  //send push notification of the new event
 });
 
 // Delete Event
@@ -557,7 +590,6 @@ router.post('/admin/user/delete', (req, res) => {
 });
 
 
-// listen (start app with node server.js) =====================
-// app.listen(config.port);
+// listen (start app with node server.js) ===========
 app.listen(config.port);
 console.log('Dragons are alive at port ' + config.port);
