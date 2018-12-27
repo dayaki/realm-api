@@ -649,21 +649,20 @@ router.post("/admin/attendance", (req, res) => {
 
 // Post new Member
 router.post("/admin/members", (req, res) => {
-  res.json({ status: moment(req.body.dob, "Do MMMM").format("Do, MMMM") });
-  // let member = new Member({
-  //   name: req.body.name,
-  //   address: req.body.address,
-  //   phone: req.body.phone,
-  //   email: req.body.email,
-  //   dob: req.body.dob,
-  //   mdob: moment(req.body.dob, "Do MMMM"),
-  //   department: req.body.department
-  // });
+  let member = new Member({
+    name: req.body.name,
+    address: req.body.address || "",
+    phone: req.body.phone || "",
+    email: req.body.email || "",
+    dob: req.body.dob,
+    mdob: moment(req.body.dob, "Do MMMM"),
+    department: req.body.department || ""
+  });
 
-  // member.save((err, attn) => {
-  //   if (err) res.json({ status: "error", msg: err });
-  //   res.json({ status: "success", data: attn });
-  // });
+  member.save((err, attn) => {
+    if (err) res.json({ status: "error", msg: err });
+    res.json({ status: "success", data: attn });
+  });
 });
 
 // fetch admins
