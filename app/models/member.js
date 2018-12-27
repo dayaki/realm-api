@@ -6,6 +6,7 @@ var MemberSchema = new Schema({
   email: String,
   phone: String,
   dob: String,
+  mdob: Date,
   address: String,
   department: String
 });

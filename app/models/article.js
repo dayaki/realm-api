@@ -8,7 +8,6 @@ var ArticleSchema = new Schema({
   image: String,
   author: String,
   color: String,
-  mdob: Date,
   created_at: {
     type: Date,
     default: moment()
