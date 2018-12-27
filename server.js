@@ -649,14 +649,14 @@ router.post("/admin/attendance", (req, res) => {
 
 // Post new Member
 router.post("/admin/members", (req, res) => {
-  res.json({ status: moment(req.body.dob, "Do MMMM") });
+  res.json({ status: moment(req.body.dob, "Do MMMM").format("Do, MMMM") });
   // let member = new Member({
-  //   iosdate: new Date(req.body.dob).toISOString(),
   //   name: req.body.name,
   //   address: req.body.address,
   //   phone: req.body.phone,
   //   email: req.body.email,
   //   dob: req.body.dob,
+  //   mdob: moment(req.body.dob, "Do MMMM"),
   //   department: req.body.department
   // });
 
