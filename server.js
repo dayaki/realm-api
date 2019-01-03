@@ -345,17 +345,20 @@ router.post("/voucher/verify", (req, res) => {
       if (voucher.timesUsed > 10) {
         res.json({ status: "usedup" });
       }
-      // if new voucher
+
+      // new voucher
       if (!voucher.used) {
         const expiry = moment().add(voucher.type.charAt(0), "months");
-        // if (req.body.user !== null) {
-        //   User.findOneAndUpdate({id: req.body.user}, { $set:
-        //     { sub_active: true, sub_end: expiry }
-        //   }, (err, user) => {});
-        // }
+        if (req.body.user !== null) {
+          User.findOneAndUpdate(
+            { id: req.body.user },
+            { $set: { sub_active: true, sub_end: expiry } },
+            (err, user) => {}
+          );
+        }
         Voucher.findOneAndUpdate(
           { _id: voucher._id },
-          { $set: { expiry } },
+          { $set: { expiry, device: req.body.device } },
           { new: true },
           (err, info) => {
             if (err) res.json({ status: "error" });
@@ -363,11 +366,15 @@ router.post("/voucher/verify", (req, res) => {
           }
         );
       }
+
       // Already used voucher
       if (voucher.used) {
+        if (voucher.device !== req.body.device) {
+          res.json({ status: "device" });
+        }
         let today = moment();
         const vouchExpiry = moment(voucher.expiry);
-        console.log("expired - ", vouchExpiry.isBefore(today));
+        // console.log("expired - ", vouchExpiry.isBefore(today));
         if (vouchExpiry.isBefore(today)) {
           // voucher has expired
           Voucher.findOneAndUpdate(
@@ -395,9 +402,7 @@ router.post("/voucher/verify", (req, res) => {
           if (req.body.user !== null) {
             User.findOneAndUpdate(
               { _id: req.body.user },
-              {
-                $set: { sub_active: true, sub_end: voucher.expiry }
-              },
+              { $set: { sub_active: true, sub_end: voucher.expiry } },
               { new: true },
               (err1, user) => {
                 res.json({ status: "userSuccess", user: user });
@@ -518,6 +523,7 @@ router.post("/admin/article", (req, res) => {
   const article = new Article({
     title: req.body.title,
     slug: slug(req.body.title, { lower: true }),
+    content: req.body.content,
     image: req.body.image || "",
     author: req.body.author,
     color: randomColor({ format: "rgba", alpha: 0.8, count: 1 })
@@ -647,7 +653,7 @@ router.post("/admin/attendance", (req, res) => {
   });
 });
 
-// Post new Member
+// New Member
 router.post("/admin/members", (req, res) => {
   let member = new Member({
     name: req.body.name,

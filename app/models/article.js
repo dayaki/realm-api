@@ -5,6 +5,7 @@ let moment = require("moment");
 var ArticleSchema = new Schema({
   title: String,
   slug: String,
+  content: String,
   image: String,
   author: String,
   color: String,
