@@ -179,10 +179,12 @@ router.get("/sermons", (req, res) => {
 
 // Fetch articles
 router.get("/articles", (req, res) => {
-  Article.find({}, (err, articles) => {
-    if (err) res.json({ status: "error", msg: err });
-    res.json({ status: "success", data: articles });
-  });
+  Article.find()
+    .sort({ created_at: -1 })
+    .exec((err, articles) => {
+      if (err) res.json({ status: "error", msg: err });
+      res.json({ status: "success", data: articles });
+    });
 });
 
 // Get user notes
