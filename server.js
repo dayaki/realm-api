@@ -47,7 +47,7 @@ router.get("/", (req, res) => {
 
 router.post("/cw/voucher/verify", (req, res) => {
   CWVoucher.findOne({ code: req.body.voucher }, (err, data) => {
-    if (err) res.json({ status: "error", data: err });
+    if (err) res.json({ status: "invalid", data: err });
 
     if (data !== null) {
       CWVoucher.findByIdAndUpdate(
