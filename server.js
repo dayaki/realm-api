@@ -57,16 +57,10 @@ router.post("/cw/voucher/verify", (req, res) => {
           res.json({ status: "success", data: user });
         }
       );
-    } else { res.json({ status: "error", data: err }); }
-  // CWVoucher.findOneAndUpdate(
-  //   { code: req.body.voucher },
-  //   { $set: { used: true, usage: +1 } },
-  //   { new: true },
-  //   (err1, voucher) => {
-  //     if (err1) res.json({ status: "error", msg: err1 });
-  //     else res.json({ status: "success", data: voucher });
-  //   }
-  // );
+    } else {
+      res.json({ status: "error", data: err });
+    }
+  });
 });
 
 ////////////////////////////////////////
