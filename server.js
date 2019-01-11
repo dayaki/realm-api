@@ -46,15 +46,27 @@ router.get("/", (req, res) => {
 });
 
 router.post("/cw/voucher/verify", (req, res) => {
-  CWVoucher.findOneAndUpdate(
-    { code: req.body.voucher },
-    { $set: { used: true, usage: +1 } },
-    { new: true },
-    (err1, voucher) => {
-      if (err1) res.json({ status: "error", msg: err1 });
-      res.json({ status: "success", data: voucher });
-    }
-  );
+  CWVoucher.findOne({ code: req.body.voucher }, (err, data) => {
+    if (err) res.json({ status: "error", data: err });
+
+    if (data !== null) {
+      CWVoucher.findByIdAndUpdate(
+        data._id,
+        { $set: { used: true, usage: +1 } },
+        (err, user) => {
+          res.json({ status: "success", data: user });
+        }
+      );
+    } else { res.json({ status: "error", data: err }); }
+  // CWVoucher.findOneAndUpdate(
+  //   { code: req.body.voucher },
+  //   { $set: { used: true, usage: +1 } },
+  //   { new: true },
+  //   (err1, voucher) => {
+  //     if (err1) res.json({ status: "error", msg: err1 });
+  //     else res.json({ status: "success", data: voucher });
+  //   }
+  // );
 });
 
 ////////////////////////////////////////
