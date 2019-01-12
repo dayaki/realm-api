@@ -53,6 +53,7 @@ router.post("/cw/voucher/verify", (req, res) => {
       CWVoucher.findByIdAndUpdate(
         data._id,
         { $set: { used: true, usage: +1 } },
+        { new: true },
         (err, user) => {
           res.json({ status: "success", data: user });
         }
