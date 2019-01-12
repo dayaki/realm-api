@@ -50,14 +50,18 @@ router.post("/cw/voucher/verify", (req, res) => {
     if (err) res.json({ status: "invalid", data: err });
 
     if (data !== null) {
-      CWVoucher.findByIdAndUpdate(
-        data._id,
-        { $set: { used: true, usage: +1 } },
-        { new: true },
-        (err, user) => {
-          res.json({ status: "success", data: user });
-        }
-      );
+      if (data.usage > 4) {
+        res.json({ status: "usage" });
+      } else {
+        CWVoucher.findByIdAndUpdate(
+          data._id,
+          { $set: { used: true, usage: +1 } },
+          { new: true },
+          (err, user) => {
+            res.json({ status: "success", data: user });
+          }
+        );
+      }
     } else {
       res.json({ status: "error", data: err });
     }
