@@ -101,7 +101,7 @@ router.post("/auth/login", (req, res) => {
   let email = req.body.email;
   let pass = req.body.password;
 
-  User.findOne({ email: email, isAdmin: "false" }, (err, user) => {
+  User.findOne({ email: email }, (err, user) => {
     if (err) res.json({ status: "error", msg: err });
 
     if (user === null) {
