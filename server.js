@@ -98,14 +98,14 @@ router.post("/auth/user", (req, res) => {
 
 // Login User
 router.post("/auth/login", (req, res) => {
-  let email = req.body.email;
-  let pass = req.body.password;
+  const email = req.body.email;
+  const pass = req.body.password;
 
-  User.findOne({ email: email }, (err, user) => {
+  User.findOne({ email: email }, function(err, user) {
     if (err) res.json({ status: "error", msg: err });
 
     if (user === null) {
-      res.json({ status: "error", msg: err, user: user });
+      res.json({ status: "error", msg: "User is not registered." });
     } else {
       if (!bcrypt.compareSync(pass, user.password)) {
         res.json({ status: "error", msg: "Invalid Username or Password." });
