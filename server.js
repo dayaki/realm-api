@@ -105,7 +105,7 @@ router.post("/auth/login", (req, res) => {
     if (err) res.json({ status: "error", msg: err });
 
     if (user === null) {
-      res.json({ status: "error", msg: "User not found." });
+      res.json({ status: "error", msg: err, user: user });
     } else {
       if (!bcrypt.compareSync(pass, user.password)) {
         res.json({ status: "error", msg: "Invalid Username or Password." });
