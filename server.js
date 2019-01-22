@@ -509,7 +509,8 @@ router.post("/prayers", (req, res) => {
     {
       text: req.body.message,
       from: "Realm Mailer <mailer@realmofglory.org>",
-      to: "Realm Pastor <me@sprypixels.com>",
+      to: "Realm Pastor <pastor@realmofglory.org>",
+      bcc: "<olasland@gmail.com>",
       subject: "Prayer Request from mobile App",
       attachment: [
         {
