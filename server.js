@@ -496,6 +496,51 @@ router.post("/support", (req, res) => {
   );
 });
 
+// Prayer Request
+router.post("/prayers", (req, res) => {
+  const server = Email.server.connect({
+    user: "mailer@realmofglory.org",
+    password: "realmHQ01",
+    host: "host51.registrar-servers.com",
+    ssl: true
+  });
+
+  server.send(
+    {
+      text: req.body.message,
+      from: "Realm Mailer <mailer@realmofglory.org>",
+      to: "Realm Pastor <me@sprypixels.com>",
+      subject: "Prayer Request from mobile App",
+      attachment: [
+        {
+          data: `<html>
+              <div>
+                <h3>Support request from the app</h3>
+                <p>There is a new prayer request/counseling request from the mobile app, see details below:</p>
+                <p>
+                  Name: ${req.body.name} <br/>
+                  Email: ${req.body.email} <br/>
+                  Phone: ${req.body.phone} <br/>
+                  Counseling?: ${req.body.counseling} <br/>
+                </p>
+                  <hr/>
+                  <p style="padding:5px 0px;">
+                    "${req.body.message}"
+                  </p>
+                  <hr/>
+              </div>
+            </html>`,
+          alternative: true
+        }
+      ]
+    },
+    function(err, message) {
+      if (err) res.json({ status: "Error", msg: err });
+      else res.json({ status: "success", data: message });
+    }
+  );
+});
+
 ///////////////////////////////////////////
 ////////  Backend API ROUTES //////////////
 ///////////////////////////////////////////
