@@ -768,7 +768,7 @@ router.get("/birthday/send", (req, res) => {
 
   axios
     .get(
-      `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=2347038327370&message=${message}&msgtype=text&delivery=yes`
+      `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=2347038263568,2347038327370&message=${message}&msgtype=text&delivery=yes`
     )
     .then(response => {
       // handle success
