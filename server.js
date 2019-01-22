@@ -784,7 +784,7 @@ router.get("/birthday/send", (req, res) => {
   //   .then(function() {
   //     // always executed
   //   });
-  this.BirthdayMessenger();
+  BirthdayMessenger();
 });
 
 // Birthday SMS
