@@ -10,6 +10,8 @@ const moment = require("moment");
 const OneSignal = require("onesignal-node");
 const Email = require("emailjs");
 const randomColor = require("randomcolor");
+const axios = require("axios");
+const cron = require("node-cron");
 
 // Models
 const User = require("./app/models/user");
@@ -758,6 +760,75 @@ router.post("/admin/user/delete", (req, res) => {
     res.json({ status: "success", data: admin });
   });
 });
+
+router.get("/birthday/send", (req, res) => {
+  const sender = "Realm%20of%20Glory%20Church";
+  const name = "Dayo Akinkuowo Emmanuel";
+  const message = `Dear ${name}, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
+
+  axios
+    .get(
+      `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=2347038327370&message=${message}&msgtype=text&delivery=yes`
+    )
+    .then(response => {
+      // handle success
+      console.log("success ---");
+      console.log(response);
+      res.json({ status: "success " });
+    })
+    .catch(function(error) {
+      // handle error
+      console.log("error", error);
+      res.json({ status: "error" });
+    })
+    .then(function() {
+      // always executed
+    });
+});
+
+// Birthday SMS
+function BirthdayMessenger() {
+  const sender = "Realm%20of%20Glory%20Church";
+  const demoUsers = [
+    {
+      name: "Bayo Adekanmbi",
+      phone: "2348028862638"
+    },
+    {
+      name: "Olamide Aiyedogbon",
+      phone: "2348027426045"
+    },
+    {
+      name: "Leslie Bapetel",
+      phone: "2348068867533"
+    },
+    {
+      name: "Dayo Akinkuowo Emmanuel",
+      phone: "2347038327350"
+    }
+  ];
+
+  demoUsers.forEach(user => {
+    const message = `Dear ${
+      user.name
+    }, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
+    const sms = `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=${phone}&message=${message}&msgtype=text&delivery=yes`;
+
+    axios
+      .get(sms)
+      .then(response => {
+        // handle success
+        console.log(response);
+      })
+      .catch(function(error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function() {
+        // always executed
+      });
+  });
+}
 
 // listen (start app with node server.js) ===========
 app.listen(config.port);
