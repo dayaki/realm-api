@@ -773,7 +773,7 @@ router.get("/birthday/send", (req, res) => {
     .then(response => {
       // handle success
       console.log("success ---");
-      console.log(response);
+      console.log(response.data);
       res.json({ status: "success " });
     })
     .catch(function(error) {
