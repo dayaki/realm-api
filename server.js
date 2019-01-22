@@ -814,7 +814,9 @@ function BirthdayMessenger() {
     const message = `Dear ${
       user.name
     }, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
-    const sms = `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=${phone}&message=${message}&msgtype=text&delivery=yes`;
+    const sms = `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=${
+      user.phone
+    }&message=${message}&msgtype=text&delivery=yes`;
 
     axios
       .get(sms)
