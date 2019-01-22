@@ -762,33 +762,35 @@ router.post("/admin/user/delete", (req, res) => {
 });
 
 router.get("/birthday/send", (req, res) => {
-  const sender = "rUPDATE";
-  const name = "Dayo Akinkuowo Emmanuel";
-  const message = `Dear ${name}, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos. Amen`;
+  // const sender = "rUPDATE";
+  // const name = "Dayo Akinkuowo Emmanuel";
+  // const message = `Dear ${name}, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos. Amen`;
 
-  axios
-    .get(
-      `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=2347038263568,2347038327370&message=${message}&msgtype=text&delivery=yes`
-    )
-    .then(response => {
-      // handle success
-      console.log("success ---");
-      console.log(response.data);
-      res.json({ status: "success " });
-    })
-    .catch(function(error) {
-      // handle error
-      console.log("error", error);
-      res.json({ status: "error" });
-    })
-    .then(function() {
-      // always executed
-    });
+  // axios
+  //   .get(
+  //     `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=2347038263568,2347038327370&message=${message}&msgtype=text&delivery=yes`
+  //   )
+  //   .then(response => {
+  //     // handle success
+  //     console.log("success ---");
+  //     console.log(response.data);
+  //     res.json({ status: "success " });
+  //   })
+  //   .catch(function(error) {
+  //     // handle error
+  //     console.log("error", error);
+  //     res.json({ status: "error" });
+  //   })
+  //   .then(function() {
+  //     // always executed
+  //   });
+  this.BirthdayMessenger();
 });
 
 // Birthday SMS
 function BirthdayMessenger() {
-  const sender = "Realm%20of%20Glory%20Church";
+  // possible senderID = rUPDATE, INFODESK, INFINITI
+  const sender = "rUPDATE";
   const demoUsers = [
     {
       name: "Bayo Adekanmbi",
@@ -818,7 +820,9 @@ function BirthdayMessenger() {
       .get(sms)
       .then(response => {
         // handle success
-        console.log(response);
+        console.log("success ---");
+        console.log(response.data);
+        res.json({ status: "success " });
       })
       .catch(function(error) {
         // handle error
