@@ -762,7 +762,7 @@ router.post("/admin/user/delete", (req, res) => {
 });
 
 router.get("/birthday/send", (req, res) => {
-  const sender = "Realm%20of%20Glory";
+  const sender = "RealmOfGlory";
   const name = "Dayo Akinkuowo Emmanuel";
   const message = `Dear ${name}, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
 
