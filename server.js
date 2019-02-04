@@ -38,10 +38,7 @@ app.use("/api", router);
 
 // DB connection
 mongoose.set("useCreateIndex", true);
-mongoose.connect(
-  config.database,
-  { useNewUrlParser: true }
-);
+mongoose.connect(config.database, { useNewUrlParser: true });
 
 router.get("/", (req, res) => {
   res.send("yeah it's working...");
@@ -447,10 +444,16 @@ router.post("/voucher/verify", (req, res) => {
 
 // Events
 router.get("/events", (req, res) => {
-  Events.find({}, (err, events) => {
-    if (err) res.json({ status: "error", msg: err });
-    else res.json({ status: "success", data: events });
-  });
+  Events.find()
+    .sort({ created_at: -1 })
+    .exec((err, events) => {
+      if (err) res.json({ status: "error", msg: err });
+      res.json({ status: "success", data: events });
+    });
+  // Events.find({}, (err, events) => {
+  //   if (err) res.json({ status: "error", msg: err });
+  //   else res.json({ status: "success", data: events });
+  // });
 });
 
 // Support email
