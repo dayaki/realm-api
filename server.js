@@ -80,11 +80,11 @@ function sendNotification(message) {
     contents: {
       en: message
     },
-    included_segments = ["Testers"],
+    included_segments: ["Testers"]
     // include_player_ids: ["0e052b18-a9bd-44c3-ae9a-6b930c895dff", '394c75b6-a254-4cff-b75f-6e8b1ec5b1b2']
   });
   // set target users
-  // firstNotification.postBody["included_segments"] = ["Active Users"];
+  firstNotification.postBody["included_segments"] = ["Testers"];
 
   // set notification parameters
   firstNotification.postBody["data"] = { dayo: "123" };
