@@ -42,6 +42,7 @@ mongoose.connect(config.database, { useNewUrlParser: true });
 
 router.get("/", (req, res) => {
   res.send("yeah it's working...");
+  sendNotification("The first message");
 });
 
 router.post("/cw/voucher/verify", (req, res) => {
@@ -66,6 +67,43 @@ router.post("/cw/voucher/verify", (req, res) => {
     }
   });
 });
+
+function sendNotification(message) {
+  const myClient = new OneSignal.Client({
+    app: {
+      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
+      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
+    }
+  });
+
+  const firstNotification = new OneSignal.Notification({
+    contents: {
+      en: message
+    },
+    include_player_ids: ["0e052b18-a9bd-44c3-ae9a-6b930c895dff"]
+  });
+  // set target users
+  // firstNotification.postBody["included_segments"] = ["Active Users"];
+
+  // set notification parameters
+  firstNotification.postBody["data"] = { dayo: "123" };
+
+  //  send after one min == moment().add(1, "minute"),
+  // firstNotification.postBody["send_after"] = 'Thu Sep 24 2015 14:00:00 GMT-0700 (PDT)';
+
+  // send this notification to All Users except Inactive ones
+  myClient.sendNotification(firstNotification, function(
+    err,
+    httpResponse,
+    data
+  ) {
+    if (err) {
+      console.log("Something went wrong...");
+    } else {
+      console.log(data, httpResponse.statusCode);
+    }
+  });
+}
 
 ////////////////////////////////////////
 ////////  APP API ROUTES //////////////
