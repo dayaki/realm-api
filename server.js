@@ -42,8 +42,34 @@ mongoose.connect(config.database, { useNewUrlParser: true });
 
 router.get("/", (req, res) => {
   res.send("yeah it's working...");
-  sendNotification("Testing Push Notification");
+  sendNotification();
 });
+
+function sendNotification() {
+  const myClient = new OneSignal.Client({
+    app: {
+      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
+      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
+    }
+  });
+
+  const notification = new OneSignal.Notification({
+    contents: {
+      en: "Testing Push Notification 😊"
+    },
+    included_segments: ["Engaged Users"] //Subscribed Users"]
+  });
+  notification.postBody["data"] = { details: req.body.details };
+
+  myClient.sendNotification(notification, (err, data) => {
+    if (err) {
+      res.json({ status: "error", err });
+    } else {
+      res.json({ status: "success", data });
+      // console.log(data, httpResponse.statusCode);
+    }
+  });
+}
 
 router.post("/cw/voucher/verify", (req, res) => {
   CWVoucher.findOne({ code: req.body.voucher }, (err, data) => {
@@ -67,36 +93,6 @@ router.post("/cw/voucher/verify", (req, res) => {
     }
   });
 });
-
-function sendNotification(message) {
-  const myClient = new OneSignal.Client({
-    app: {
-      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
-      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
-    }
-  });
-
-  const firstNotification = new OneSignal.Notification({
-    contents: {
-      en: message
-    },
-    included_segments: ["Testers"]
-  });
-  firstNotification.postBody["data"] = { dayo: "123" };
-  firstNotification.postBody["send_after"] = moment().add(1, "minutes");
-
-  myClient.sendNotification(firstNotification, function(
-    err,
-    httpResponse,
-    data
-  ) {
-    if (err) {
-      console.log("Something went wrong...");
-    } else {
-      console.log(data, httpResponse.statusCode);
-    }
-  });
-}
 
 ////////////////////////////////////////
 ////////  APP API ROUTES //////////////
@@ -501,7 +497,7 @@ router.post("/support", (req, res) => {
       text: req.body.message,
       from: "Realm Mailer <mailer@realmofglory.org>",
       to: "Web Team <webteam@realmofglory.org>",
-      bcc: "<olasland@gmail.com>, <akindotun@gmail.com>, <me@sprypixels.com>",
+      bcc: "<olasland@gmail.com>, <me@sprypixels.com>",
       subject: "Support Message from App",
       attachment: [
         {
@@ -657,11 +653,39 @@ router.post("/admin/sermons", (req, res) => {
     tags: req.body.tags.split(",")
   });
 
+  newSermonNotification(req.body.title);
+
   sermon.save((err, sermom) => {
     if (err) res.json({ status: "error" });
     res.json({ status: "success", data: sermon });
   });
 });
+
+function newSermonNotification(title) {
+  const myClient = new OneSignal.Client({
+    app: {
+      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
+      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
+    }
+  });
+
+  const notification = new OneSignal.Notification({
+    contents: {
+      en: `New Sermon: ${title}`
+    },
+    included_segments: ["Testers"]
+  });
+  notification.postBody["data"] = { sermon: true };
+  notification.postBody["send_after"] = moment().add(5, "minutes");
+
+  myClient.sendNotification(notification, (err, httpResponse, data) => {
+    if (err) {
+      console.log("Something went wrong...");
+    } else {
+      console.log(data, httpResponse.statusCode);
+    }
+  });
+}
 
 // Fetch online givers
 router.get("/admin/giving", (req, res) => {
@@ -792,6 +816,32 @@ router.post("/admin/user/delete", (req, res) => {
   Admin.findOneAndDelete({ _id: req.body.user }, (err, admin) => {
     if (err) res.json({ status: "error", msg: err });
     res.json({ status: "success", data: admin });
+  });
+});
+
+router.post("/admin/message", (req, res) => {
+  const myClient = new OneSignal.Client({
+    app: {
+      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
+      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
+    }
+  });
+
+  const notification = new OneSignal.Notification({
+    contents: {
+      en: req.body.message
+    },
+    included_segments: ["Testers"] //Subscribed Users"]
+  });
+  notification.postBody["data"] = { details: req.body.details };
+
+  myClient.sendNotification(notification, (err, data) => {
+    if (err) {
+      res.json({ status: "error", err });
+    } else {
+      res.json({ status: "success", data });
+      // console.log(data, httpResponse.statusCode);
+    }
   });
 });
 
