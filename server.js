@@ -59,14 +59,15 @@ function sendNotification() {
     },
     included_segments: ["Engaged Users"] //Subscribed Users"]
   });
-  notification.postBody["data"] = { details: req.body.details };
+  notification.postBody["data"] = { details: "some info" };
 
   myClient.sendNotification(notification, (err, data) => {
     if (err) {
-      res.json({ status: "error", err });
+      console.log(err);
+      // res.json({ status: "error", err });
     } else {
-      res.json({ status: "success", data });
-      // console.log(data, httpResponse.statusCode);
+      // res.json({ status: "success", data });
+      console.log(data, httpResponse.statusCode);
     }
   });
 }
