@@ -81,18 +81,10 @@ function sendNotification(message) {
       en: message
     },
     included_segments: ["Testers"]
-    // include_player_ids: ["0e052b18-a9bd-44c3-ae9a-6b930c895dff", '394c75b6-a254-4cff-b75f-6e8b1ec5b1b2']
   });
-  // set target users
-  firstNotification.postBody["included_segments"] = ["Testers"];
-
-  // set notification parameters
   firstNotification.postBody["data"] = { dayo: "123" };
+  firstNotification.postBody["send_after"] = moment().add(1, "minutes");
 
-  //  send after one min == moment().add(1, "minute"),
-  // firstNotification.postBody["send_after"] = 'Thu Sep 24 2015 14:00:00 GMT-0700 (PDT)';
-
-  // send this notification to All Users except Inactive ones
   myClient.sendNotification(firstNotification, function(
     err,
     httpResponse,
