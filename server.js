@@ -674,8 +674,8 @@ function newSermonNotification(title) {
     contents: {
       en: `New Sermon: ${title}`
     },
-    included_segments: ["Testers"]
-    // included_segments: ["Subscribed Users"]
+    // included_segments: ["Testers"]
+    included_segments: ["Subscribed Users"]
   });
   notification.postBody["data"] = { sermon: true };
   notification.postBody["send_after"] = moment().add(1, "minutes");
