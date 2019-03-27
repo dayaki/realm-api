@@ -42,35 +42,35 @@ mongoose.connect(config.database, { useNewUrlParser: true });
 
 router.get("/", (req, res) => {
   res.send("yeah it's working...");
-  sendNotification();
+  // sendNotification();
 });
 
-function sendNotification() {
-  const myClient = new OneSignal.Client({
-    app: {
-      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
-      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
-    }
-  });
+// function sendNotification() {
+//   const myClient = new OneSignal.Client({
+//     app: {
+//       appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
+//       appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
+//     }
+//   });
 
-  const notification = new OneSignal.Notification({
-    contents: {
-      en: "Testing Push Notification 😊"
-    },
-    included_segments: ["Engaged Users"] //Subscribed Users"]
-  });
-  notification.postBody["data"] = { details: "some info" };
+//   const notification = new OneSignal.Notification({
+//     contents: {
+//       en: "Testing Push Notification 😊"
+//     },
+//     included_segments: ["Engaged Users"] //Subscribed Users"]
+//   });
+//   notification.postBody["data"] = { details: "some info" };
 
-  myClient.sendNotification(notification, (err, data) => {
-    if (err) {
-      console.log(err);
-      // res.json({ status: "error", err });
-    } else {
-      // res.json({ status: "success", data });
-      console.log(data, httpResponse.statusCode);
-    }
-  });
-}
+//   myClient.sendNotification(notification, (err, data) => {
+//     if (err) {
+//       console.log(err);
+//       // res.json({ status: "error", err });
+//     } else {
+//       // res.json({ status: "success", data });
+//       console.log(data);
+//     }
+//   });
+// }
 
 router.post("/cw/voucher/verify", (req, res) => {
   CWVoucher.findOne({ code: req.body.voucher }, (err, data) => {
@@ -675,9 +675,10 @@ function newSermonNotification(title) {
       en: `New Sermon: ${title}`
     },
     included_segments: ["Testers"]
+    // included_segments: ["Subscribed Users"]
   });
   notification.postBody["data"] = { sermon: true };
-  notification.postBody["send_after"] = moment().add(5, "minutes");
+  notification.postBody["send_after"] = moment().add(1, "minutes");
 
   myClient.sendNotification(notification, (err, httpResponse, data) => {
     if (err) {
