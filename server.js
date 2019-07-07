@@ -665,14 +665,14 @@ router.post("/admin/sermons", (req, res) => {
 function newSermonNotification(title) {
   const myClient = new OneSignal.Client({
     app: {
-      appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
-      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
+      appAuthKey: "OTA2OTE4OWEtMTczMy00MzAyLWFkN2YtMTcwZTE3ZTUzMzJi",
+      appId: "d9b7eddc-f5b2-4cdc-a295-b415f9c40674"
     }
   });
 
   const notification = new OneSignal.Notification({
     contents: {
-      en: `New Sermon: ${title}`
+      en: `Latest Sermon: ${title}`
     },
     // included_segments: ["Testers"]
     included_segments: ["Subscribed Users"]
