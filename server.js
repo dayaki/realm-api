@@ -422,9 +422,9 @@ router.post("/voucher/verify", (req, res) => {
 
       // Already used voucher
       if (voucher.used) {
-        if (voucher.device !== req.body.device) {
-          return res.json({ status: "device" });
-        }
+        // if (voucher.device !== req.body.device) {
+        //   return res.json({ status: "device" });
+        // }
         let today = moment();
         const vouchExpiry = moment(voucher.expiry);
         // console.log("expired - ", vouchExpiry.isBefore(today));
@@ -467,7 +467,6 @@ router.post("/voucher/verify", (req, res) => {
                 } else {
                   res.json({ status: "userSuccess", user: user });
                 }
-                
               }
             );
           } else {
