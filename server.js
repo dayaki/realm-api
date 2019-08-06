@@ -458,7 +458,11 @@ router.post("/voucher/verify", (req, res) => {
               { $set: { sub_active: true, sub_end: voucher.expiry } },
               { new: true },
               (err1, user) => {
-                res.json({ status: "userSuccess", user: user });
+                if (err1) {
+                  res.json({ status: "error" });
+                } else {
+                  res.json({ status: "userSuccess", user: user });
+                }
               }
             );
           } else {
