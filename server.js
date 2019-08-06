@@ -387,16 +387,16 @@ router.post("/voucher/expired", (req, res) => {
 // Validate Voucher
 router.post("/voucher/verify", (req, res) => {
   Voucher.findOne({ code: req.body.voucher }, (err, voucher) => {
-    if (err) res.json({ status: "error", data: err });
+    if (err) return res.json({ status: "error", data: err });
 
     if (voucher === null) {
-      res.json({ status: "invalid" });
+      return res.json({ status: "invalid" });
     } else {
       if (voucher.isExpired) {
-        res.json({ status: "expired" });
+        return res.json({ status: "expired" });
       }
       if (voucher.timesUsed > 10) {
-        res.json({ status: "usedup" });
+        return res.json({ status: "usedup" });
       }
 
       // new voucher
@@ -414,7 +414,7 @@ router.post("/voucher/verify", (req, res) => {
           { $set: { expiry, device: req.body.device } },
           { new: true },
           (err, info) => {
-            if (err) res.json({ status: "error" });
+            if (err) return res.json({ status: "error" });
             res.json({ status: "voucher", data: info });
           }
         );
@@ -423,7 +423,7 @@ router.post("/voucher/verify", (req, res) => {
       // Already used voucher
       if (voucher.used) {
         if (voucher.device !== req.body.device) {
-          res.json({ status: "device" });
+          return res.json({ status: "device" });
         }
         let today = moment();
         const vouchExpiry = moment(voucher.expiry);
@@ -435,14 +435,18 @@ router.post("/voucher/verify", (req, res) => {
             { $set: { isExpired: true, used: true } },
             { new: true },
             (err1, newVouch) => {
-              if (err1) res.json({ status: "error", msg: err });
+              if (err1) return res.json({ status: "error", msg: err });
               if (req.body.user !== null) {
                 User.findOneAndUpdate(
                   { _id: req.body.user },
                   { $set: { sub_active: false } },
                   { new: true },
                   (err, expiredUser) => {
-                    res.json({ status: "userExpired", data: expiredUser });
+                    if (err) {
+                      return res.json({ status: "error", msg: err });
+                    } else {
+                      res.json({ status: "userExpired", data: expiredUser });
+                    }
                   }
                 );
               } else {
@@ -460,8 +464,10 @@ router.post("/voucher/verify", (req, res) => {
               (err1, user) => {
                 if (err1) {
                   return res.json({ status: "error" });
+                } else {
+                  res.json({ status: "userSuccess", user: user });
                 }
-                res.json({ status: "userSuccess", user: user });
+                
               }
             );
           } else {
