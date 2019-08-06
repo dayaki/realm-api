@@ -459,10 +459,9 @@ router.post("/voucher/verify", (req, res) => {
               { new: true },
               (err1, user) => {
                 if (err1) {
-                  res.json({ status: "error" });
-                } else {
-                  res.json({ status: "userSuccess", user: user });
+                  return res.json({ status: "error" });
                 }
+                res.json({ status: "userSuccess", user: user });
               }
             );
           } else {
