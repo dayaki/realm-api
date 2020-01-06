@@ -174,6 +174,68 @@ router.post("/auth/fb", (req, res) => {
   });
 });
 
+// Forgot Password
+router.post("/auth/forgotpass", (req, res) => {
+  User.findOneAndUpdate(
+    { email: req.body.email },
+    { $set: { password: bcrypt.hashSync(password) } },
+    (err, vouc) => {
+      if (err) {
+        res.json({ status: "error", msg: err });
+      } else {
+        const server = Email.server.connect({
+          user: "mailer@realmofglory.org",
+          password: "realmHQ01",
+          host: "host51.registrar-servers.com",
+          ssl: true
+        });
+        const fnPassword = Math.random()
+          .toString(36)
+          .substr(2, 8);
+        server.send(
+          {
+            text: req.body.message,
+            from: "Realm Mailer <mailer@realmofglory.org>",
+            to: req.body.email,
+            subject: "Password Reset",
+            attachment: [
+              {
+                data: `<html>
+                    <div>
+                      <h3>Hello there!</h3>
+                      <p>Your new password is <strong>${fnPassword}</strong></p>
+                      <p>If this was not at your request, then please contact the web team immediately.</p>
+                      <p>Warm regards,</p>
+                      <p>ROG Web Team</p>
+                    </div>
+                  </html>`,
+                alternative: true
+              }
+            ]
+          },
+          function(err, message) {
+            if (err) res.json({ status: "Error", msg: err });
+            else res.json({ status: "success", data: message });
+          }
+        );
+      }
+      res.json({ status: "success" });
+    }
+  );
+
+  // User.findOne({ email: req.body.email }, (err, data) => {
+  //   if (err) {
+  //     res.json({ status: "error", data: err });
+  //   } else {
+  //     if (data === null) {
+  //       res.json({ status: "error", msg: "Email address does not exist." });
+  //     } else {
+
+  //     }
+  //   }
+  // })
+});
+
 // User
 router
   .route("/users")
@@ -905,12 +967,8 @@ function BirthdayMessenger() {
   ];
 
   demoUsers.forEach(user => {
-    const message = `Dear ${
-      user.name
-    }, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
-    const sms = `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=${
-      user.phone
-    }&message=${message}&msgtype=text&delivery=yes`;
+    const message = `Dear ${user.name}, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
+    const sms = `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=${user.phone}&message=${message}&msgtype=text&delivery=yes`;
 
     axios
       .get(sms)
