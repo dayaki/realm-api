@@ -13,6 +13,8 @@ log.txt
 npm-debug.log*
 *.keystore
 config.js
+.env
+/*.env
 
 .idea/
 .ionic/
