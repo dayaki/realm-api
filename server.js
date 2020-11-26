@@ -1,7 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const genVoucher = require("voucher-code-generator");
 const cors = require("cors");
 const slug = require("slug");
@@ -111,8 +112,8 @@ router.post("/auth/user", (req, res) => {
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,
-        password: bcrypt.hashSync(req.body.password),
-        onesignal: req.body.onesignal
+        password: bcrypt.hashSync(req.body.password, saltRounds),
+        onesignal: req.body.onesignal,
       });
 
       newUser.save((err, user) => {
@@ -128,7 +129,7 @@ router.post("/auth/login", (req, res) => {
   const email = req.body.email;
   const pass = req.body.password;
 
-  User.findOne({ email: email }, function(err, user) {
+  User.findOne({ email: email }, function (err, user) {
     if (err) res.json({ status: "error", msg: err });
 
     if (user === null) {
@@ -154,7 +155,7 @@ router.post("/auth/fb", (req, res) => {
         name: req.body.name,
         email: req.body.email,
         photo: req.body.photo,
-        onesignal: req.body.onesignal
+        onesignal: req.body.onesignal,
       });
 
       user.save((err, user) => {
@@ -176,9 +177,11 @@ router.post("/auth/fb", (req, res) => {
 
 // Forgot Password
 router.post("/auth/forgotpass", (req, res) => {
+  const fnPassword = Math.random().toString(36).substr(2, 8);
+
   User.findOneAndUpdate(
     { email: req.body.email },
-    { $set: { password: bcrypt.hashSync(password) } },
+    { $set: { password: bcrypt.hashSync(fnPassword, saltRounds) } },
     (err, vouc) => {
       if (err) {
         res.json({ status: "error", msg: err });
@@ -187,11 +190,9 @@ router.post("/auth/forgotpass", (req, res) => {
           user: "mailer@realmofglory.org",
           password: "realmHQ01",
           host: "host51.registrar-servers.com",
-          ssl: true
+          ssl: true,
         });
-        const fnPassword = Math.random()
-          .toString(36)
-          .substr(2, 8);
+
         server.send(
           {
             text: req.body.message,
@@ -209,11 +210,11 @@ router.post("/auth/forgotpass", (req, res) => {
                       <p>ROG Web Team</p>
                     </div>
                   </html>`,
-                alternative: true
-              }
-            ]
+                alternative: true,
+              },
+            ],
           },
-          function(err, message) {
+          function (err, message) {
             if (err) res.json({ status: "Error", msg: err });
             else res.json({ status: "success", data: message });
           }
@@ -241,7 +242,7 @@ router
   .route("/users")
 
   .get((req, res) => {
-    User.find(function(err, users) {
+    User.find(function (err, users) {
       if (err) return res.send(err.errmsg);
       res.json({ data: users });
     });
@@ -253,8 +254,8 @@ router
       req.body.user_id,
       {
         $set: {
-          photo: req.body.photo
-        }
+          photo: req.body.photo,
+        },
       },
       { new: false },
       (err, user) => {
@@ -317,7 +318,7 @@ router.post("/notes", (req, res) => {
     title: req.body.title,
     preacher: req.body.preacher,
     content: req.body.content,
-    author: req.body.user
+    author: req.body.user,
   });
 
   note.save((err, note) => {
@@ -340,8 +341,8 @@ router.post("/note/update", (req, res) => {
       $set: {
         title: req.body.title,
         preacher: req.body.preacher,
-        content: req.body.content
-      }
+        content: req.body.content,
+      },
     },
     (err, note) => {
       if (err) res.json({ status: "error", msg: err });
@@ -378,7 +379,7 @@ router.post("/giving", (req, res) => {
     phone: req.body.phone,
     amount: req.body.amount,
     type: req.body.type,
-    txn_ref: req.body.ref
+    txn_ref: req.body.ref,
   });
 
   give.save((err, give) => {
@@ -393,7 +394,7 @@ router.post("/voucher/paymemt", (req, res) => {
   let vouc = new Voucher({
     code: req.body.voucher,
     expiry: moment().add(req.body.type, "months"),
-    type: `${req.body.type} Month`
+    type: `${req.body.type} Month`,
   });
 
   vouc.save((err, vouOne) => {
@@ -405,8 +406,8 @@ router.post("/voucher/paymemt", (req, res) => {
         {
           $set: {
             sub_active: true,
-            sub_end: moment().add(req.body.type, "months")
-          }
+            sub_end: moment().add(req.body.type, "months"),
+          },
         },
         { new: true },
         (err, user) => {
@@ -560,7 +561,7 @@ router.post("/support", (req, res) => {
     user: "mailer@realmofglory.org",
     password: "realmHQ01",
     host: "host51.registrar-servers.com",
-    ssl: true
+    ssl: true,
   });
 
   server.send(
@@ -588,11 +589,11 @@ router.post("/support", (req, res) => {
                   <hr/>
               </div>
             </html>`,
-          alternative: true
-        }
-      ]
+          alternative: true,
+        },
+      ],
     },
-    function(err, message) {
+    function (err, message) {
       if (err) res.json({ status: "Error", msg: err });
       else res.json({ status: "success", data: message });
     }
@@ -605,7 +606,7 @@ router.post("/prayers", (req, res) => {
     user: "mailer@realmofglory.org",
     password: "realmHQ01",
     host: "host51.registrar-servers.com",
-    ssl: true
+    ssl: true,
   });
 
   server.send(
@@ -634,11 +635,11 @@ router.post("/prayers", (req, res) => {
                   <hr/>
               </div>
             </html>`,
-          alternative: true
-        }
-      ]
+          alternative: true,
+        },
+      ],
     },
-    function(err, message) {
+    function (err, message) {
       if (err) res.json({ status: "Error", msg: err });
       else res.json({ status: "success", data: message });
     }
@@ -670,8 +671,8 @@ router.post("/admin/user/new", (req, res) => {
   let user = new Admin({
     name: req.body.name,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password),
-    role: req.body.role
+    password: bcrypt.hashSync(req.body.password, saltRounds),
+    role: req.body.role,
   });
 
   user.save((err, user) => {
@@ -681,7 +682,7 @@ router.post("/admin/user/new", (req, res) => {
 });
 
 router.post("/admin/user/password", (req, res) => {
-  const password = bcrypt.hashSync(req.body.password);
+  const password = bcrypt.hashSync(req.body.password, saltRounds);
   Admin.findOneAndUpdate(
     { _id: req.body.user },
     { $set: { password } },
@@ -701,7 +702,7 @@ router.post("/admin/article", (req, res) => {
     content: req.body.content,
     image: req.body.image || "",
     author: req.body.author,
-    color: randomColor({ format: "rgba", alpha: 0.8, count: 1 })
+    color: randomColor({ format: "rgba", alpha: 0.8, count: 1 }),
   });
 
   article.save((err, article) => {
@@ -721,7 +722,7 @@ router.post("/admin/sermons", (req, res) => {
     date: req.body.date,
     isodate: new Date(Date.now()).toISOString(),
     featured: req.body.featured,
-    tags: req.body.tags.split(",")
+    tags: req.body.tags.split(","),
   });
 
   newSermonNotification(req.body.title);
@@ -736,16 +737,16 @@ function newSermonNotification(title) {
   const myClient = new OneSignal.Client({
     app: {
       appAuthKey: "OTA2OTE4OWEtMTczMy00MzAyLWFkN2YtMTcwZTE3ZTUzMzJi",
-      appId: "d9b7eddc-f5b2-4cdc-a295-b415f9c40674"
-    }
+      appId: "d9b7eddc-f5b2-4cdc-a295-b415f9c40674",
+    },
   });
 
   const notification = new OneSignal.Notification({
     contents: {
-      en: `Latest Sermon: ${title}`
+      en: `Latest Sermon: ${title}`,
     },
     // included_segments: ["Testers"]
-    included_segments: ["Subscribed Users"]
+    included_segments: ["Subscribed Users"],
   });
   notification.postBody["data"] = { sermon: true };
   notification.postBody["send_after"] = moment().add(1, "minutes");
@@ -776,7 +777,7 @@ router.post("/admin/events", (req, res) => {
     address: req.body.address,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
-    time: req.body.time
+    time: req.body.time,
   });
 
   event.save((err, event) => {
@@ -811,16 +812,14 @@ router.get("/admin/vouchers/new/:type", (req, res) => {
     length: 9,
     count: 200,
     charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    pattern: "###-####-##"
+    pattern: "###-####-##",
   });
 
-  vouchers.forEach(voucher => {
+  vouchers.forEach((voucher) => {
     let vouc = new Voucher({
       code: voucher,
-      expiry: moment()
-        .add(req.params.type, "months")
-        .toISOString(),
-      type: `${req.params.type} Month`
+      expiry: moment().add(req.params.type, "months").toISOString(),
+      type: `${req.params.type} Month`,
     });
 
     vouc.save((err, vou) => {
@@ -848,7 +847,7 @@ router.post("/admin/attendance", (req, res) => {
     women: req.body.women,
     children: req.body.children,
     summary: req.body.summary,
-    serviceType: req.body.serviceType
+    serviceType: req.body.serviceType,
   });
 
   attend.save((err, attn) => {
@@ -866,7 +865,7 @@ router.post("/admin/members", (req, res) => {
     email: req.body.email || "",
     dob: req.body.dob,
     mdob: moment(req.body.dob, "Do MMMM"),
-    department: req.body.department || ""
+    department: req.body.department || "",
   });
 
   member.save((err, attn) => {
@@ -895,15 +894,15 @@ router.post("/admin/message", (req, res) => {
   const myClient = new OneSignal.Client({
     app: {
       appAuthKey: "NWQwYTcxYWUtOTA5MC00NThhLThjMmItMTJiNGFmM2YxNjE4",
-      appId: "9becef96-c36d-4a85-a7be-601860a1cb70"
-    }
+      appId: "9becef96-c36d-4a85-a7be-601860a1cb70",
+    },
   });
 
   const notification = new OneSignal.Notification({
     contents: {
-      en: req.body.message
+      en: req.body.message,
     },
-    included_segments: ["Testers"] //Subscribed Users"]
+    included_segments: ["Testers"], //Subscribed Users"]
   });
   notification.postBody["data"] = { details: req.body.details };
 
@@ -950,39 +949,39 @@ function BirthdayMessenger() {
   const demoUsers = [
     {
       name: "Bayo Adekanmbi",
-      phone: "2348028862638"
+      phone: "2348028862638",
     },
     {
       name: "Olamide Aiyedogbon",
-      phone: "2348027426045"
+      phone: "2348027426045",
     },
     {
       name: "Leslie Bapetel",
-      phone: "2348068867533"
+      phone: "2348068867533",
     },
     {
       name: "Dayo Akinkuowo Emmanuel",
-      phone: "2347038327350"
-    }
+      phone: "2347038327350",
+    },
   ];
 
-  demoUsers.forEach(user => {
+  demoUsers.forEach((user) => {
     const message = `Dear ${user.name}, on this occasion of your birthday, may the Lord God grant you new strength for new heights. Happy birthday to you from Realm of Glory International Church, Okota, Lagos.`;
     const sms = `http://api.ibulky.com/sendsms/?apikey=fc9f9aa5d5cff73e8c3cb14f-16d36ea&sender=${sender}&recipient=${user.phone}&message=${message}&msgtype=text&delivery=yes`;
 
     axios
       .get(sms)
-      .then(response => {
+      .then((response) => {
         // handle success
         console.log("success ---");
         console.log(response.data);
         res.json({ status: "success " });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         // handle error
         console.log(error);
       })
-      .then(function() {
+      .then(function () {
         // always executed
       });
   });
