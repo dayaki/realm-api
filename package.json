@@ -1,13 +1,13 @@
 {
   "name": "realm_api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API for the Realm of Glory app",
   "main": "server.js",
   "scripts": {
     "start": "node ./server.js"
   },
   "engines": {
-    "npm": "5.7.x"
+    "node": "10.x"
   },
   "author": "Dayo Akinkuowo",
   "license": "ISC",
