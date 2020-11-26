@@ -20,7 +20,7 @@
     "express": "^4.16.3",
     "http": "0.0.0",
     "moment": "^2.22.2",
-    "mongoose": "^5.2.10",
+    "mongoose": "^5.7.5",
     "node-cron": "^2.0.3",
     "nodemailer": "^4.7.0",
     "onesignal-node": "^2.0.1",
