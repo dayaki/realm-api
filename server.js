@@ -725,7 +725,7 @@ router.post("/admin/sermons", (req, res) => {
     tags: req.body.tags.split(","),
   });
 
-  newSermonNotification(req.body.title);
+  // newSermonNotification(req.body.title);
 
   sermon.save((err, sermom) => {
     if (err) res.json({ status: "error" });
@@ -740,6 +740,12 @@ function newSermonNotification(title) {
       appId: "d9b7eddc-f5b2-4cdc-a295-b415f9c40674",
     },
   });
+  // const myClient = new OneSignal.Client({
+  //   app: {
+  //     appAuthKey: "OTA2OTE4OWEtMTczMy00MzAyLWFkN2YtMTcwZTE3ZTUzMzJi",
+  //     appId: "d9b7eddc-f5b2-4cdc-a295-b415f9c40674",
+  //   },
+  // });
 
   const notification = new OneSignal.Notification({
     contents: {
